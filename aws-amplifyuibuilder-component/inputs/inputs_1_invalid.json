@@ -1,0 +1,12 @@
+{
+  "AppId": "wrongAppId",
+  "EnvironmentName": "staging",
+  "Id": "",
+  "Name": "CustomButton",
+  "ComponentType": "Button",
+  "Variants": [],
+  "BindingProperties": [],
+  "Overrides": [],
+  "Children": [],
+  "Properties": []
+}

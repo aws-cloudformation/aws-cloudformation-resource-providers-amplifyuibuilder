@@ -1,0 +1,35 @@
+{
+  "AppId": "wrongAppId",
+  "EnvironmentName": "staging",
+  "Name": "ContractTestTheme",
+  "Id": "",
+  "Values": [
+    {
+      "Key": "tokens",
+      "Value": {
+        "Children": [
+          {
+            "Key": "components",
+            "Value": {
+              "Children": [
+                {
+                  "Key": "alert",
+                  "Value": {
+                    "Children": [
+                      {
+                        "Key": "backgroundcolor",
+                        "Value": {
+                          "Value": "hsl(210, 5%, 90%)"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

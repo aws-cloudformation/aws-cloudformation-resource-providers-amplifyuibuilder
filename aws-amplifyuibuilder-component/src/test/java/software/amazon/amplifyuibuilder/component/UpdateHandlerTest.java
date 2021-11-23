@@ -1,0 +1,146 @@
+package software.amazon.amplifyuibuilder.component;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.Duration;
+import java.util.ArrayList;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
+import software.amazon.awssdk.services.amplifyuibuilder.model.*;
+import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.ProgressEvent;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
+@ExtendWith(MockitoExtension.class)
+public class UpdateHandlerTest extends AbstractTestBase {
+
+  @Mock
+  private AmazonWebServicesClientProxy proxy;
+
+  @Mock
+  private ProxyClient<AmplifyUiBuilderClient> proxyClient;
+
+  @Mock
+  AmplifyUiBuilderClient sdkClient;
+
+  @BeforeEach
+  public void setup() {
+    proxy =
+        new AmazonWebServicesClientProxy(
+            logger,
+            MOCK_CREDENTIALS,
+            () -> Duration.ofSeconds(600).toMillis()
+        );
+    sdkClient = mock(AmplifyUiBuilderClient.class);
+    proxyClient = MOCK_PROXY(proxy, sdkClient);
+  }
+
+  @AfterEach
+  public void tear_down() {
+    verify(sdkClient, atLeastOnce()).serviceName();
+    verifyNoMoreInteractions(sdkClient);
+  }
+
+  @Test
+  public void handleRequest_SimpleSuccess() {
+    final UpdateHandler handler = new UpdateHandler();
+
+    final GetComponentResponse getResponse = GetComponentResponse
+        .builder()
+        .component(
+            Component
+                .builder()
+                .name(NAME)
+                .id(ID)
+                .appId(APP_ID)
+                .environmentName(ENV_NAME)
+                .componentType(TYPE)
+                .variants(Translator.translateVariantsFromCFNToSDK(VARIANT_CFN))
+                .bindingProperties(Translator.translateBindingPropertiesFromCFNToSDK(BINDING_PROPERTIES_CFN))
+                .overrides(OVERRIDES)
+                .properties(Translator.translatePropertiesFromCFNToSDK(PROPERTIES_CFN))
+                .collectionProperties(Translator.translateCollectionPropertiesFromCFNToSDK(COLLECTION_PROPERTIES_CFN))
+                .children(Translator.translateChildComponentsFromCFNToSDK(CHILDREN_CFN))
+                .tags(TAGS)
+                .build()
+        )
+        .build();
+
+    when(proxyClient.client().getComponent(any(GetComponentRequest.class)))
+        .thenReturn(getResponse);
+
+    final UpdateComponentResponse updateResponse = UpdateComponentResponse
+        .builder()
+        .entity(
+            Component
+                .builder()
+                .build()
+
+        )
+        .build();
+
+    when(proxyClient.client().updateComponent(any(UpdateComponentRequest.class)))
+        .thenReturn(updateResponse);
+
+    final ResourceModel model = ResourceModel
+        .builder()
+        .appId(APP_ID)
+        .environmentName(ENV_NAME)
+        .id(ID)
+        .name(NAME)
+        .id(ID)
+        .componentType(TYPE)
+        .children(new ArrayList<>())
+        .variants(VARIANT_CFN)
+        .bindingProperties(BINDING_PROPERTIES_CFN)
+        .overrides(OVERRIDES)
+        .properties(PROPERTIES_CFN)
+        .collectionProperties(COLLECTION_PROPERTIES_CFN)
+        .children(CHILDREN_CFN)
+        .build();
+
+    CallbackContext context = new CallbackContext();
+
+    final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
+        .<ResourceModel>builder()
+        .desiredResourceState(model)
+        .build();
+
+    final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(
+        proxy,
+        request,
+        context,
+        proxyClient,
+        logger
+    );
+
+    ResourceModel component = response.getResourceModel();
+    ResourceModel updatedComponent = request.getDesiredResourceState();
+
+    assertThat(response.getResourceModels()).isNull();
+    assertThat(component.getAppId()).isEqualTo(updatedComponent.getAppId());
+    assertThat(component.getEnvironmentName()).isEqualTo(updatedComponent.getEnvironmentName());
+    assertThat(component.getId()).isEqualTo(updatedComponent.getId());
+    assertThat(component.getComponentType()).isEqualTo(updatedComponent.getComponentType());
+    assertThat(component.getName()).isEqualTo(updatedComponent.getName());
+    assertThat(component.getVariants().size()).isEqualTo(updatedComponent.getVariants().size());
+    assertThat(component.getBindingProperties().keySet()).isEqualTo(updatedComponent.getBindingProperties().keySet());
+    assertThat(component.getOverrides()).isEqualTo(updatedComponent.getOverrides());
+    assertThat(component.getProperties().keySet()).isEqualTo(updatedComponent.getProperties().keySet());
+    assertThat(component.getCollectionProperties().keySet()).isEqualTo(updatedComponent.getCollectionProperties().keySet());
+    assertThat(component.getChildren().size()).isEqualTo(updatedComponent.getChildren().size());
+  }
+}

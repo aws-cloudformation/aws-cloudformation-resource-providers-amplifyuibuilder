@@ -1,0 +1,20 @@
+{
+  "AppId": "{{ContractTestAppId}}",
+  "EnvironmentName": "staging",
+  "Name": "ContractTestComponent",
+  "ComponentType": "Button",
+  "Variants": [],
+  "BindingProperties": {},
+  "Overrides": {},
+  "Children": [],
+  "Properties": {
+    "Children": {
+      "Type": "String",
+      "Value": "Submit",
+      "Bindings": {},
+      "Concat": []
+    }
+  },
+  "CollectionProperties": {},
+  "Tags": {}
+}
