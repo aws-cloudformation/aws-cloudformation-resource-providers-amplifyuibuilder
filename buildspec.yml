@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+        java: openjdk8
+        python: 3.7
+    commands:
+      -  pip install pre-commit cloudformation-cli-java-plugin
+  build:
+    commands:
+      - pre-commit run --all-files
+      # install internal SDK (Java)
+      # - cd "$CODEBUILD_SRC_DIR_SDK"
+      # - >
+      #   mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file --batch-mode
+      #   -Dfile=AwsJavaSdk-AmplifyUiBuilder-2.0.jar -DgroupId=software.amazon.awssdk -DartifactId=amplifyuibuilder -Dversion=2.0.0 -Dpackaging=jar
+      #   - cd "$CODEBUILD_SRC_DIR/my_resource"
+      #   - mvn clean verify --no-transfer-progress
+      # finally:
+      #   - cat "$CODEBUILD_SRC_DIR/my_resource/rpdk.log"
