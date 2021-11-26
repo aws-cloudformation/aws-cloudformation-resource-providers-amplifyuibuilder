@@ -19,3 +19,6 @@ phases:
       - mvn clean verify install --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme"
       - mvn clean verify -X --no-transfer-progress
+    finally:
+      - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component/rpdk.log"
+      - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme/rpdk.log"
