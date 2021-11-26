@@ -98,4 +98,3 @@ Returns the <code>Id</code> value.
 #### ModifiedAt
 
 Returns the <code>ModifiedAt</code> value.
-
