@@ -16,9 +16,9 @@ phases:
         mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file --batch-mode
         -Dfile=./AwsJavaSdk-AmplifyUiBuilder-2.0.jar -DgroupId=software.amazon.awssdk -DartifactId=amplifyuibuilder -Dversion=2.0.0 -Dpackaging=jar
       - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component"
-      - mvn clean verify install --no-transfer-progress
+      - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean verify --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme"
-      - mvn clean verify -X --no-transfer-progress
+      - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean verify --no-transfer-progress
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component/rpdk.log"
       - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme/rpdk.log"
