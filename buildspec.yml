@@ -5,7 +5,9 @@ phases:
         java: openjdk8
         python: 3.7
     commands:
-      -  pip install pre-commit cloudformation-cli-java-plugin PyYAML==6.0
+      -  pip install pre-commit cloudformation-cli-java-plugin
+      # upgrade all packages
+      -  pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
   build:
     commands:
       - pre-commit run --all-files
