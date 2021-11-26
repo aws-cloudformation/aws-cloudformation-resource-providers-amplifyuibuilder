@@ -9,22 +9,15 @@ phases:
   build:
     commands:
       - pre-commit run --all-files
-      - |
-        if [ "$(ls -A $CODEBUILD_SRC_DIR)" ]; then
-          cd $CODEBUILD_SRC_DIR
-          # skip hidden folders
-          dirs=$(find . -not -path "\./\.*" -mindepth 1 -maxdepth 1 -type d)
-          echo "Folders to build: $dirs"
-          for directory in $dirs; do
-            cd "$directory"
-            mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean verify --no-transfer-progress
-            if [ "$?" -ne 0 ] ; then
-                echo "Build failed!"
-                exit 1
-            else
-                cd ".."
-            fi
-          done
-        else
-          echo "$CODEBUILD_SRC_DIR is empty"
-        fi
+      # install internal SDK (Java)
+      - cd "$CODEBUILD_SRC_DIR_SDK"
+      # - >
+      #   mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file --batch-mode
+      #   -Dfile=cloudformation-2.5.11.jar -DgroupId=software.amazon.awssdk -DartifactId=<Your POM artifact ID> -Dversion=<Your POM artifact Version> -Dpackaging=jar
+      - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component"
+      - mvn clean verify install --no-transfer-progress
+      - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme"
+      - mvn clean verify -X --no-transfer-progress
+    finally:
+      - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component/rpdk.log"
+      - cat "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme/rpdk.log"
