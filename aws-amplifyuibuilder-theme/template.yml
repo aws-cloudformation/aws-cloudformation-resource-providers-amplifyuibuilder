@@ -21,4 +21,3 @@ Resources:
       Handler: software.amazon.amplifyuibuilder.theme.HandlerWrapper::testEntrypoint
       Runtime: java8
       CodeUri: ./target/aws-amplifyuibuilder-theme-handler-1.0-SNAPSHOT.jar
-
