@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -146,5 +148,39 @@ public class CreateHandlerTest extends AbstractTestBase {
     assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
     assertThat(component.getTags()).isEqualTo(model.getTags());
     assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
+  }
+
+  @Test
+  public void handleRequest_NullProperties() {
+    final CreateHandler handler = new CreateHandler();
+
+    when(proxyClient.client().createComponent(any(CreateComponentRequest.class)))
+        .thenThrow(new CfnInvalidRequestException("Invalid parameters"));
+
+    final ResourceModel model = ResourceModel
+        .builder()
+        .environmentName(ENV_NAME)
+        .appId(APP_ID)
+        .name(NAME)
+        .componentType(TYPE)
+        .tags(TAGS)
+        .build();
+
+    CallbackContext context = new CallbackContext();
+
+    final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
+        .<ResourceModel>builder()
+        .desiredResourceState(model)
+        .build();
+
+    Assertions.assertThrows(CfnInvalidRequestException.class, () -> {
+      handler.handleRequest(
+        proxy,
+        request,
+        context,
+        proxyClient,
+        logger
+      );
+    });
   }
 }

@@ -9,9 +9,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,15 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateHandlerTest extends AbstractTestBase {
+public class UpdateHandlerTest extends AbstractTestBase {
 
   @Mock
   private AmazonWebServicesClientProxy proxy;
@@ -58,12 +56,12 @@ public class CreateHandlerTest extends AbstractTestBase {
 
   @Test
   public void handleRequest_SimpleSuccess() {
-    final CreateHandler handler = new CreateHandler();
+    final UpdateHandler handler = new UpdateHandler();
 
     final GetComponentResponse getResponse = GetComponentResponse
         .builder()
         .component(
-            software.amazon.awssdk.services.amplifyuibuilder.model.Component
+            Component
                 .builder()
                 .name(NAME)
                 .id(ID)
@@ -84,37 +82,34 @@ public class CreateHandlerTest extends AbstractTestBase {
     when(proxyClient.client().getComponent(any(GetComponentRequest.class)))
         .thenReturn(getResponse);
 
-    final CreateComponentResponse createResponse = CreateComponentResponse
+    final UpdateComponentResponse updateResponse = UpdateComponentResponse
         .builder()
         .entity(
-            (
-                software.amazon.awssdk.services.amplifyuibuilder.model.Component
-                    .builder()
-                    // Use this returned ID to pass to read handler after component is created
-                    .id(ID)
-                    .build()
-            )
+            Component
+                .builder()
+                .build()
+
         )
         .build();
 
-    when(
-        proxyClient.client().createComponent(any(CreateComponentRequest.class))
-    )
-        .thenReturn(createResponse);
+    when(proxyClient.client().updateComponent(any(UpdateComponentRequest.class)))
+        .thenReturn(updateResponse);
 
     final ResourceModel model = ResourceModel
         .builder()
-        .environmentName(ENV_NAME)
         .appId(APP_ID)
+        .environmentName(ENV_NAME)
+        .id(ID)
         .name(NAME)
+        .id(ID)
         .componentType(TYPE)
+        .children(new ArrayList<>())
         .variants(VARIANT_CFN)
         .bindingProperties(BINDING_PROPERTIES_CFN)
         .overrides(OVERRIDES)
         .properties(PROPERTIES_CFN)
-        .tags(TAGS)
-        .children(CHILDREN_CFN)
         .collectionProperties(COLLECTION_PROPERTIES_CFN)
+        .children(CHILDREN_CFN)
         .build();
 
     CallbackContext context = new CallbackContext();
@@ -131,56 +126,21 @@ public class CreateHandlerTest extends AbstractTestBase {
         proxyClient,
         logger
     );
+
     ResourceModel component = response.getResourceModel();
+    ResourceModel updatedComponent = request.getDesiredResourceState();
 
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-    assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
     assertThat(response.getResourceModels()).isNull();
-    assertThat(response.getMessage()).isNull();
-    assertThat(response.getErrorCode()).isNull();
-
-    assertThat(component.getChildren().size()).isEqualTo(model.getChildren().size());
-    assertThat(component.getProperties().keySet()).isEqualTo(model.getProperties().keySet());
-    assertThat(component.getVariants().size()).isEqualTo(model.getVariants().size());
-    assertThat(component.getBindingProperties().keySet()).isEqualTo(model.getBindingProperties().keySet());
-    assertThat(component.getOverrides()).isEqualTo(model.getOverrides());
-    assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
-    assertThat(component.getTags()).isEqualTo(model.getTags());
-    assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
-  }
-
-  @Test
-  public void handleRequest_NullProperties() {
-    final CreateHandler handler = new CreateHandler();
-
-    when(proxyClient.client().createComponent(any(CreateComponentRequest.class)))
-        .thenThrow(new CfnInvalidRequestException("Invalid parameters"));
-
-    final ResourceModel model = ResourceModel
-        .builder()
-        .environmentName(ENV_NAME)
-        .appId(APP_ID)
-        .name(NAME)
-        .componentType(TYPE)
-        .tags(TAGS)
-        .build();
-
-    CallbackContext context = new CallbackContext();
-
-    final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
-        .<ResourceModel>builder()
-        .desiredResourceState(model)
-        .build();
-
-    Assertions.assertThrows(CfnInvalidRequestException.class, () -> {
-      handler.handleRequest(
-        proxy,
-        request,
-        context,
-        proxyClient,
-        logger
-      );
-    });
+    assertThat(component.getAppId()).isEqualTo(updatedComponent.getAppId());
+    assertThat(component.getEnvironmentName()).isEqualTo(updatedComponent.getEnvironmentName());
+    assertThat(component.getId()).isEqualTo(updatedComponent.getId());
+    assertThat(component.getComponentType()).isEqualTo(updatedComponent.getComponentType());
+    assertThat(component.getName()).isEqualTo(updatedComponent.getName());
+    assertThat(component.getVariants().size()).isEqualTo(updatedComponent.getVariants().size());
+    assertThat(component.getBindingProperties().keySet()).isEqualTo(updatedComponent.getBindingProperties().keySet());
+    assertThat(component.getOverrides()).isEqualTo(updatedComponent.getOverrides());
+    assertThat(component.getProperties().keySet()).isEqualTo(updatedComponent.getProperties().keySet());
+    assertThat(component.getCollectionProperties().keySet()).isEqualTo(updatedComponent.getCollectionProperties().keySet());
+    assertThat(component.getChildren().size()).isEqualTo(updatedComponent.getChildren().size());
   }
 }
