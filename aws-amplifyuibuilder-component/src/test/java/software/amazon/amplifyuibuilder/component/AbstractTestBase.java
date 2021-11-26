@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.core.ResponseBytes;
@@ -75,6 +76,20 @@ public class AbstractTestBase {
         .builder()
         .model("User")
         .identifiers(ImmutableList.of("abcdefg", "1234567"))
+            .predicate(null)
+        .sort(ImmutableList.of(SortProperty.builder().direction("ASC").field("testField").build()))
+        .build());
+    collectionProperties.put("inputUser", ComponentDataConfiguration
+        .builder()
+        .model("User")
+        .identifiers(ImmutableList.of("abcdefg", "1234567"))
+            .predicate(Predicate.builder()
+                .and(ImmutableList.of(Predicate.builder()
+                  .field("test").build()))
+                .or(ImmutableList.of(Predicate.builder()
+                    .operand("operand").build()))
+                .operator("operator")
+                .build())
         .build());
     return collectionProperties;
   }
@@ -91,6 +106,7 @@ public class AbstractTestBase {
         .build());
     properties.put("backgroundColor", ComponentProperty
         .builder()
+        .condition(null)
         .bindingProperties(
             ComponentPropertyBindingProperties
                 .builder()
@@ -130,6 +146,12 @@ public class AbstractTestBase {
             )
             .build())
         .build());
+    properties.put("epic", ComponentProperty.builder()
+            .bindings(ImmutableMap.of("formBinding", FormBindingElement.builder()
+                .property("Name")
+                .element("Input")
+                .build()))
+        .build());
     return properties;
   }
 
@@ -158,7 +180,13 @@ public class AbstractTestBase {
                 .build()
         )
         .build();
+    ComponentBindingPropertiesValue bindingPropertiesValue2 = ComponentBindingPropertiesValue
+        .builder()
+        .defaultValue("John Smith")
+        .type("String")
+        .build();
     bindingProperties.put("user", bindingPropertiesValue);
+    bindingProperties.put("betaUser", bindingPropertiesValue2);
     return bindingProperties;
   }
 

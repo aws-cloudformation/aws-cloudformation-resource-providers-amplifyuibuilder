@@ -60,7 +60,6 @@ public class ReadHandlerTest extends AbstractTestBase {
                 .modifiedAt(NOW)
                 .name(NAME)
                 .tags(TAGS)
-                .overrides(Translator.translateThemeValuesListFromCFNToSDK(THEME_VALUES_LIST))
                 .values(Translator.translateThemeValuesListFromCFNToSDK(THEME_VALUES_LIST))
                 .build())
             .build();
@@ -75,7 +74,6 @@ public class ReadHandlerTest extends AbstractTestBase {
             .createdAt(NOW.toString())
             .modifiedAt(NOW.toString())
             .name(NAME)
-            .overrides(THEME_VALUES_LIST)
             .values(THEME_VALUES_LIST)
             .build();
 
@@ -96,7 +94,8 @@ public class ReadHandlerTest extends AbstractTestBase {
         assertThat(actual.getName()).isEqualTo(model.getName());
         assertThat(actual.getEnvironmentName()).isEqualTo(model.getEnvironmentName());
         assertThat(actual.getValues().size()).isEqualTo(model.getValues().size());
-        assertThat(actual.getOverrides().size()).isEqualTo(model.getOverrides().size());
+        assertThat(model.getOverrides()).isNull();
+        assertThat(actual.getOverrides().size()).isEqualTo(0);
         assertThat(response.getResourceModels()).isNull();
 
     }

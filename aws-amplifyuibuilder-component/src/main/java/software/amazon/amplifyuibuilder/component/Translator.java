@@ -117,7 +117,9 @@ public class Translator {
       return null;
     }
     Map<String, ComponentProperty> translated = new HashMap<>();
-    properties.forEach((k, v) -> translated.put(k, translateComponentPropertyFromCFNToSDK(v)));
+    properties.forEach((k, v) -> {
+      translated.put(k, translateComponentPropertyFromCFNToSDK(v));
+    });
     return translated;
   }
 
@@ -125,25 +127,26 @@ public class Translator {
     if (condition == null) {
       return null;
     }
-    return ComponentConditionProperty
+    ComponentConditionProperty.Builder builder = ComponentConditionProperty
         .builder()
-        .elseValue(translateComponentPropertyFromCFNToSDK(condition.getElse_()))
-        .then(translateComponentPropertyFromCFNToSDK(condition.getThen()))
         .field(condition.getField())
         .operand(condition.getOperand())
         .operator(condition.getOperator())
-        .property(condition.getProperty())
-        .build();
+        .property(condition.getProperty());
+    if (condition.getElse_() != null) {
+      builder.elseValue(translateComponentPropertyFromCFNToSDK(condition.getElse_()));
+    }
+    if (condition.getThen() != null) {
+      builder.then(translateComponentPropertyFromCFNToSDK(condition.getThen()));
+    }
+    return builder.build();
   }
 
   private static ComponentProperty translateComponentPropertyFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentProperty property) {
-    if (property == null) {
-      return null;
-    }
     // ComponentProperty is flattened to include properties of many types.
     // So check each property for null because there can only be a subset of values assigned to these properties
     // See StudioComponent.properties type in https://code.amazon.com/packages/AmplifyStudioCommon/blobs/mainline/--/src/types/index.ts
-    return ComponentProperty
+    ComponentProperty.Builder builder = ComponentProperty
         .builder()
         .type(property.getType())
         .importedValue(property.getImportedValue())
@@ -153,9 +156,12 @@ public class Translator {
         .value(property.getValue())
         .bindingProperties(translateComponentPropertyBindingPropertiesFromCFNToSDK(property.getBindingProperties()))
         .condition(translateConditionFromCFNToSDK(property.getCondition()))
-        .bindings(translateFormBindingElementsFromCFNToSDK(property.getBindings()))
-        .concat(translateComponentPropertiesFromCFNToSDK(property.getConcat()))
-        .build();
+        .concat(translateComponentPropertiesFromCFNToSDK(property.getConcat()));
+
+    if (property.getBindings() != null) {
+      builder.bindings(translateFormBindingElementsFromCFNToSDK(property.getBindings()));
+    }
+    return builder.build();
   }
 
   private static List<ComponentProperty> translateComponentPropertiesFromCFNToSDK(List<software.amazon.amplifyuibuilder.component.ComponentProperty> properties) {
@@ -181,9 +187,6 @@ public class Translator {
   }
 
   private static Map<String, FormBindingElement> translateFormBindingElementsFromCFNToSDK(Map<String, software.amazon.amplifyuibuilder.component.FormBindingElement> bindings) {
-    if (bindings == null) {
-      return null;
-    }
     Map<String, FormBindingElement> translated = new HashMap<>();
     bindings.forEach((k, v) -> translated.put(k,
             FormBindingElement.builder()
@@ -298,28 +301,26 @@ public class Translator {
         .componentType(componentResponse.componentType())
         .name(componentResponse.name())
         .bindingProperties(translateBindingPropertiesFromSDKToCFN(componentResponse.bindingProperties()))
+        .overrides(componentResponse.overrides())
+        .tags(componentResponse.tags())
         .properties(translatePropertiesFromSDKToCFN(componentResponse.properties()))
         .children(translateChildrenFromSDKToCFN(componentResponse.children()))
         .variants(translateVariantsFromSDKToCFN(componentResponse.variants()))
-        .overrides(componentResponse.overrides())
-        .tags(componentResponse.tags())
         .collectionProperties(translateCollectionPropertiesFromSDKToCFN(componentResponse.collectionProperties()))
         .build();
   }
 
   private static Map<String, software.amazon.amplifyuibuilder.component.ComponentDataConfiguration> translateCollectionPropertiesFromSDKToCFN(Map<String, ComponentDataConfiguration> collectionProperties) {
-    if (collectionProperties == null) {
-      return null;
-    }
     Map<String, software.amazon.amplifyuibuilder.component.ComponentDataConfiguration> translated = new HashMap<>();
     collectionProperties.forEach((k, v) -> {
       software.amazon.amplifyuibuilder.component.ComponentDataConfiguration.ComponentDataConfigurationBuilder componentDataConfigurationBuilder = software.amazon.amplifyuibuilder.component.ComponentDataConfiguration
           .builder()
           .model(v.model())
           .identifiers(v.identifiers())
-          .sort(translateSortFromSDKToCFN(v.sort()))
           .predicate(translatePredicateFromSDKToCFN(v.predicate()));
-
+      if (v.sort() != null) {
+        componentDataConfigurationBuilder.sort(translateSortFromSDKToCFN(v.sort()));
+      }
       translated.put(k, componentDataConfigurationBuilder.build());
     });
     return translated;
@@ -329,20 +330,21 @@ public class Translator {
     if (predicate == null) {
       return null;
     }
-    return software.amazon.amplifyuibuilder.component.Predicate
+    software.amazon.amplifyuibuilder.component.Predicate.PredicateBuilder builder = software.amazon.amplifyuibuilder.component.Predicate
         .builder()
         .operator(predicate.operator())
         .field(predicate.field())
-        .operand(predicate.operand())
-        .or(translatePredicatesFromSDKToCFN(predicate.or()))
-        .and(translatePredicatesFromSDKToCFN(predicate.and()))
-        .build();
+        .operand(predicate.operand());
+    if (predicate.or() != null) {
+      builder.or(translatePredicatesFromSDKToCFN(predicate.or()));
+    }
+    if (predicate.and() != null) {
+      builder.and(translatePredicatesFromSDKToCFN(predicate.and()));
+    }
+    return builder.build();
   }
 
   private static List<software.amazon.amplifyuibuilder.component.Predicate> translatePredicatesFromSDKToCFN(List<Predicate> predicates) {
-    if (predicates == null) {
-      return null;
-    }
     List<software.amazon.amplifyuibuilder.component.Predicate> translated = new ArrayList<>();
     for (Predicate predicate : predicates) {
       translated.add(translatePredicateFromSDKToCFN(predicate));
@@ -351,9 +353,6 @@ public class Translator {
   }
 
   private static List<software.amazon.amplifyuibuilder.component.SortProperty> translateSortFromSDKToCFN(List<SortProperty> sort) {
-    if (sort == null) {
-      return null;
-    }
     List<software.amazon.amplifyuibuilder.component.SortProperty> translated = new ArrayList<>();
     for (SortProperty sortProperty : sort) {
       translated.add(
@@ -368,9 +367,6 @@ public class Translator {
   }
 
   private static List<software.amazon.amplifyuibuilder.component.ComponentVariant> translateVariantsFromSDKToCFN(List<ComponentVariant> variants) {
-    if (variants == null) {
-      return null;
-    }
     List<software.amazon.amplifyuibuilder.component.ComponentVariant> translated = new ArrayList<>();
     for (ComponentVariant variant : variants) {
       translated.add(software.amazon.amplifyuibuilder.component.ComponentVariant.builder()
@@ -382,27 +378,28 @@ public class Translator {
   }
 
   private static List<software.amazon.amplifyuibuilder.component.ComponentChild> translateChildrenFromSDKToCFN(List<ComponentChild> children) {
-    if (children == null) {
-      return null;
-    }
     List<software.amazon.amplifyuibuilder.component.ComponentChild> translated = new ArrayList<>();
     for (ComponentChild child : children) {
-      translated.add(software.amazon.amplifyuibuilder.component.ComponentChild.builder()
-          .componentType(child.componentType())
-          .properties(translatePropertiesFromSDKToCFN(child.properties()))
-          .children(translateChildrenFromSDKToCFN(child.children()))
-          .build()
-      );
+      software.amazon.amplifyuibuilder.component.ComponentChild.ComponentChildBuilder builder = software.amazon.amplifyuibuilder.component.ComponentChild.builder()
+          .componentType(child.componentType());
+      if (child.properties() != null) {
+        builder.properties(translatePropertiesFromSDKToCFN(child.properties()));
+      }
+      if (child.children() != null) {
+        builder.children(translateChildrenFromSDKToCFN(child.children()));
+      }
+      translated.add(builder.build());
     }
     return translated;
   }
 
   private static Map<String, software.amazon.amplifyuibuilder.component.ComponentProperty> translatePropertiesFromSDKToCFN(Map<String, ComponentProperty> properties) {
-    if (properties == null) {
-      return null;
-    }
     Map<String, software.amazon.amplifyuibuilder.component.ComponentProperty> translated = new HashMap<>();
-    properties.forEach((k, v) -> translated.put(k, translateComponentPropertyFromSDKToCFN(v)));
+    properties.forEach((k, v) -> {
+      if (v != null) {
+        translated.put(k, translateComponentPropertyFromSDKToCFN(v));
+      }
+    });
     return translated;
   }
 
@@ -410,24 +407,25 @@ public class Translator {
     if (condition == null) {
       return null;
     }
-    return software.amazon.amplifyuibuilder.component.ComponentConditionProperty
+    software.amazon.amplifyuibuilder.component.ComponentConditionProperty.ComponentConditionPropertyBuilder builder = software.amazon.amplifyuibuilder.component.ComponentConditionProperty
         .builder()
-        .else_(translateComponentPropertyFromSDKToCFN(condition.elseValue()))
-        .then(translateComponentPropertyFromSDKToCFN(condition.then()))
         .operator(condition.operator())
         .field(condition.field())
         .operand(condition.operand())
-        .property(condition.property())
-        .build();
+        .property(condition.property());
+    if (condition.elseValue() != null) {
+      builder.else_(translateComponentPropertyFromSDKToCFN(condition.elseValue()));
+    }
+    if (condition.then() != null) {
+      builder.then(translateComponentPropertyFromSDKToCFN(condition.then()));
+    }
+    return builder.build();
   }
 
   private static software.amazon.amplifyuibuilder.component.ComponentProperty translateComponentPropertyFromSDKToCFN(ComponentProperty property) {
-    if (property == null) {
-      return null;
-    }
     // ComponentProperty is flattened to include properties of many types.
     // See StudioComponentProperty type in https://code.amazon.com/packages/AmplifyStudioCommon/blobs/mainline/--/src/types/index.ts
-    return software.amazon.amplifyuibuilder.component.ComponentProperty
+    software.amazon.amplifyuibuilder.component.ComponentProperty.ComponentPropertyBuilder builder = software.amazon.amplifyuibuilder.component.ComponentProperty
         .builder()
         .type(property.type())
         .importedValue(property.importedValue())
@@ -437,15 +435,14 @@ public class Translator {
         .value(property.value())
         .bindingProperties(translateComponentPropertyBindingPropertiesFromSDKToCFN(property.bindingProperties()))
         .condition(translateConditionFromSDKToCFN(property.condition()))
-        .concat(translateComponentPropertiesFromSDKToCFN(property.concat()))
-        .bindings(translateFormBindingElementsFromSDKToCFN(property.bindings()))
-        .build();
+        .bindings(translateFormBindingElementsFromSDKToCFN(property.bindings()));
+    if (property.concat() != null) {
+      builder.concat(translateComponentPropertiesFromSDKToCFN(property.concat()));
+    }
+    return builder.build();
   }
 
   private static List<software.amazon.amplifyuibuilder.component.ComponentProperty> translateComponentPropertiesFromSDKToCFN(List<ComponentProperty> properties) {
-    if (properties == null) {
-      return null;
-    }
     List<software.amazon.amplifyuibuilder.component.ComponentProperty> translated = new ArrayList<>();
     for (ComponentProperty property : properties) {
       translated.add(translateComponentPropertyFromSDKToCFN(property));
@@ -494,8 +491,10 @@ public class Translator {
         bindingPropertiesValueProperties.userAttribute(v.bindingProperties().userAttribute());
         bindingPropertiesValueProperties.model(v.bindingProperties().model());
         bindingPropertiesValueProperties.key(v.bindingProperties().key());
-        bindingPropertiesValueProperties.predicates(translatePredicatesFromSDKToCFN(v.bindingProperties().predicates()));
         bindingPropertiesValueProperties.defaultValue(v.bindingProperties().defaultValue());
+        if (v.bindingProperties().predicates() != null) {
+          bindingPropertiesValueProperties.predicates(translatePredicatesFromSDKToCFN(v.bindingProperties().predicates()));
+        }
         bindingPropertiesValue.bindingProperties(bindingPropertiesValueProperties.build());
       }
       translated.put(k, bindingPropertiesValue.build());

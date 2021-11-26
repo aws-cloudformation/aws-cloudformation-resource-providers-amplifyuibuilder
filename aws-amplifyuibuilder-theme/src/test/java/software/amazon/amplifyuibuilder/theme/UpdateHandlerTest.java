@@ -1,8 +1,10 @@
 package software.amazon.amplifyuibuilder.theme;
 
 import java.time.Duration;
+import org.junit.jupiter.api.Assertions;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -35,12 +37,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         sdkClient = mock(AmplifyUiBuilderClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-    }
-
-    @AfterEach
-    public void tear_down() {
-        verify(sdkClient, atLeastOnce()).serviceName();
-        verifyNoMoreInteractions(sdkClient);
     }
 
     @Test
@@ -100,5 +96,45 @@ public class UpdateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    public void handleRequest_NullID() {
+        final UpdateHandler handler = new UpdateHandler();
+
+        final ResourceModel model = ResourceModel.builder()
+            .appId(APP_ID)
+            .environmentName(ENV_NAME)
+            .name(NAME)
+            .overrides(THEME_VALUES_LIST)
+            .values(THEME_VALUES_LIST)
+            .tags(TAGS)
+            .build();
+
+        final ResourceModel emptyStringIDModel = ResourceModel.builder()
+            .appId(APP_ID)
+            .id("")
+            .environmentName(ENV_NAME)
+            .name(NAME)
+            .overrides(THEME_VALUES_LIST)
+            .values(THEME_VALUES_LIST)
+            .tags(TAGS)
+            .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(model)
+            .build();
+
+        final ResourceHandlerRequest<ResourceModel> emptyStringIDRequest = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(emptyStringIDModel)
+            .build();
+
+        Assertions.assertThrows(CfnNotFoundException.class, () -> {
+            handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        });
+
+        Assertions.assertThrows(CfnNotFoundException.class, () -> {
+            handler.handleRequest(proxy, emptyStringIDRequest, new CallbackContext(), proxyClient, logger);
+        });
     }
 }

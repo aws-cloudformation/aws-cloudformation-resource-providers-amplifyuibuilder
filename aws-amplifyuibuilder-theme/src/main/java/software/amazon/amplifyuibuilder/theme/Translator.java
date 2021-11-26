@@ -139,33 +139,26 @@ public class Translator {
         .orElseGet(Stream::empty);
   }
 
-
-  private static List<ThemeValues> translateThemeValuesListFromSDKToCFN(List<software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues> overrides) {
-    if (overrides == null) {
-      return null;
-    }
+  private static List<ThemeValues> translateThemeValuesListFromSDKToCFN(List<software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues> values) {
     List<ThemeValues> translated = new ArrayList<>();
-    for (software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues o : overrides) {
-      translated.add(translateThemeValuesFromSDKToCFN(o));
+    for (software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues v : values) {
+      translated.add(translateThemeValuesFromSDKToCFN(v));
     }
     return translated;
   }
 
   private static ThemeValue translateThemeValueFromSDKToCFN(software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue value) {
-    if (value == null) {
-      return null;
+    ThemeValue.ThemeValueBuilder builder = ThemeValue.builder();
+    if (value.value() != null) {
+      builder.value(value.value());
     }
-    return ThemeValue
-        .builder()
-        .value(value.value())
-        .children(translateThemeValuesListFromSDKToCFN(value.children()))
-        .build();
+    if (value.children() != null) {
+      builder.children(translateThemeValuesListFromSDKToCFN(value.children()));
+    }
+    return builder.build();
   }
 
   private static ThemeValues translateThemeValuesFromSDKToCFN(software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues themeValues) {
-    if (themeValues == null) {
-      return null;
-    }
     return ThemeValues
         .builder()
         .key(themeValues.key())
@@ -173,21 +166,18 @@ public class Translator {
         .build();
   }
 
-  static List<software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues> translateThemeValuesListFromCFNToSDK(List<ThemeValues> overrides) {
-    if (overrides == null) {
+  static List<software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues> translateThemeValuesListFromCFNToSDK(List<ThemeValues> values) {
+    if (values == null) {
       return null;
     }
     List<software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues> translated = new ArrayList<>();
-    for (ThemeValues o : overrides) {
-      translated.add(translateThemeValuesFromCFNToSDK(o));
+    for (ThemeValues v : values) {
+      translated.add(translateThemeValuesFromCFNToSDK(v));
     }
     return translated;
   }
 
   private static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues translateThemeValuesFromCFNToSDK(ThemeValues themeValues) {
-    if (themeValues == null) {
-      return null;
-    }
     return software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues
         .builder()
         .key(themeValues.getKey())
@@ -196,9 +186,6 @@ public class Translator {
   }
 
   private static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue translateThemeValueFromCFNToSDK(ThemeValue value) {
-    if (value == null) {
-      return null;
-    }
     return software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue
         .builder()
         .value(value.getValue())

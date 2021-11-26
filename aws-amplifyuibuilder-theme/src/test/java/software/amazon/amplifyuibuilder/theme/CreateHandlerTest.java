@@ -103,4 +103,61 @@ public class CreateHandlerTest extends AbstractTestBase {
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
+
+    @Test
+    public void handleRequest_NullSimpleSuccess() {
+        final CreateHandler handler = new CreateHandler();
+
+        final GetThemeResponse getResponse = GetThemeResponse.builder()
+            .theme(Theme.builder()
+                .id(ID)
+                .appId(APP_ID)
+                .environmentName(ENV_NAME)
+                .name(NAME)
+                .createdAt(NOW)
+                .modifiedAt(NOW)
+                .tags(TAGS)
+                .build())
+            .build();
+
+        when(proxyClient.client().getTheme(any(GetThemeRequest.class)))
+            .thenReturn(getResponse);
+
+        final CreateThemeResponse createResponse = CreateThemeResponse.builder()
+            .entity(Theme.builder()
+                // Use this returned ID to pass to read handler after component is created
+                .id(ID)
+                .build())
+            .build();
+
+        when(proxyClient.client().createTheme(any(CreateThemeRequest.class)))
+            .thenReturn(createResponse);
+
+        final ResourceModel model = ResourceModel.builder()
+            .appId(APP_ID)
+            .environmentName(ENV_NAME)
+            .tags(TAGS)
+            .name(NAME)
+            .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(model)
+            .build();
+
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        final ResourceModel actual = response.getResourceModel();
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(actual.getOverrides().size()).isEqualTo(0);
+        assertThat(actual.getValues().size()).isEqualTo(0);
+        assertThat(actual.getTags()).isEqualTo(model.getTags());
+        assertThat(actual.getName()).isEqualTo(model.getName());
+        assertThat(actual.getId()).isEqualTo(model.getId());
+        assertThat(actual.getEnvironmentName()).isEqualTo(model.getEnvironmentName());
+        assertThat(actual.getAppId()).isEqualTo(model.getAppId());
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
 }
