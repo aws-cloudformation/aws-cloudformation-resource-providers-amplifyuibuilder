@@ -14,7 +14,7 @@ phases:
       - ls
       - >
         mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file --batch-mode
-        -Dfile=./AmplifyUiBuilder-2.0.jar -DgroupId=software.amazon.awssdk -DartifactId=amplifyuibuilder -Dversion=2.0.0 -Dpackaging=jar
+        -Dfile=./AwsJavaSdk-AmplifyUiBuilder-2.0.jar -DgroupId=software.amazon.awssdk -DartifactId=amplifyuibuilder -Dversion=2.0.0 -Dpackaging=jar
       - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-component"
       - mvn clean verify install --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplifyuibuilder-theme"
