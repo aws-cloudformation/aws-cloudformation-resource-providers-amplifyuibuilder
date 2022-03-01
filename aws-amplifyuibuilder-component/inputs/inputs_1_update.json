@@ -16,5 +16,19 @@
     }
   },
   "CollectionProperties": {},
-  "Tags": {}
+  "Events": {
+    "Click": {
+      "Action": "Amplify.AuthSignout",
+      "Parameters": {
+        "Global": {
+          "Type": "Boolean",
+          "Value": "False",
+          "Bindings": {},
+          "Concat": []
+        }
+      }
+    }
+  },
+  "Tags": {},
+  "SchemaVersion": "1.1"
 }

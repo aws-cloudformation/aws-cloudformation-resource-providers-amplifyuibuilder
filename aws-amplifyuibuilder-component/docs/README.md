@@ -16,9 +16,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#children" title="Children">Children</a>" : <i>[ <a href="componentchild.md">ComponentChild</a>, ... ]</i>,
         "<a href="#collectionproperties" title="CollectionProperties">CollectionProperties</a>" : <i><a href="collectionproperties.md">CollectionProperties</a></i>,
         "<a href="#componenttype" title="ComponentType">ComponentType</a>" : <i>String</i>,
+        "<a href="#events" title="Events">Events</a>" : <i><a href="componentchild-events.md">Events</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#overrides" title="Overrides">Overrides</a>" : <i><a href="overrides.md">Overrides</a></i>,
         "<a href="#properties" title="Properties">Properties</a>" : <i><a href="componentchild-properties.md">Properties</a></i>,
+        "<a href="#schemaversion" title="SchemaVersion">SchemaVersion</a>" : <i>String</i>,
         "<a href="#sourceid" title="SourceId">SourceId</a>" : <i>String</i>,
         "<a href="#tags" title="Tags">Tags</a>" : <i><a href="tags.md">Tags</a></i>,
         "<a href="#variants" title="Variants">Variants</a>" : <i>[ <a href="componentvariant.md">ComponentVariant</a>, ... ]</i>
@@ -36,9 +38,11 @@ Properties:
       - <a href="componentchild.md">ComponentChild</a></i>
     <a href="#collectionproperties" title="CollectionProperties">CollectionProperties</a>: <i><a href="collectionproperties.md">CollectionProperties</a></i>
     <a href="#componenttype" title="ComponentType">ComponentType</a>: <i>String</i>
+    <a href="#events" title="Events">Events</a>: <i><a href="componentchild-events.md">Events</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#overrides" title="Overrides">Overrides</a>: <i><a href="overrides.md">Overrides</a></i>
     <a href="#properties" title="Properties">Properties</a>: <i><a href="componentchild-properties.md">Properties</a></i>
+    <a href="#schemaversion" title="SchemaVersion">SchemaVersion</a>: <i>String</i>
     <a href="#sourceid" title="SourceId">SourceId</a>: <i>String</i>
     <a href="#tags" title="Tags">Tags</a>: <i><a href="tags.md">Tags</a></i>
     <a href="#variants" title="Variants">Variants</a>: <i>
@@ -49,7 +53,7 @@ Properties:
 
 #### BindingProperties
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="bindingproperties.md">BindingProperties</a>
 
@@ -73,7 +77,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ComponentType
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -83,9 +87,17 @@ _Maximum_: <code>255</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Name
+#### Events
 
 _Required_: No
+
+_Type_: <a href="componentchild-events.md">Events</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Name
+
+_Required_: Yes
 
 _Type_: String
 
@@ -97,7 +109,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Overrides
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="overrides.md">Overrides</a>
 
@@ -105,9 +117,17 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Properties
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="componentchild-properties.md">Properties</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SchemaVersion
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -129,7 +149,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Variants
 
-_Required_: No
+_Required_: Yes
 
 _Type_: List of <a href="componentvariant.md">ComponentVariant</a>
 
@@ -147,10 +167,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Returns the <code>AppId</code> value.
 
-#### CreatedAt
-
-Returns the <code>CreatedAt</code> value.
-
 #### EnvironmentName
 
 Returns the <code>EnvironmentName</code> value.
@@ -159,6 +175,3 @@ Returns the <code>EnvironmentName</code> value.
 
 Returns the <code>Id</code> value.
 
-#### ModifiedAt
-
-Returns the <code>ModifiedAt</code> value.

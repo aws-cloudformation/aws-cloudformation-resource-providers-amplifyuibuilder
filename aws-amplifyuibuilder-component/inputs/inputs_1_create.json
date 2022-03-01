@@ -8,5 +8,21 @@
   "Overrides": {},
   "Children": [],
   "Properties": {},
-  "CollectionProperties": {}
+  "CollectionProperties": {},
+  "Events": {
+    "Click": {
+      "Action": "Amplify.AuthSignOut",
+      "Parameters": {
+        "Global": {
+          "Type": "Boolean",
+          "Value": "True",
+          "ComponentName": "FakeComponent",
+          "Property": "fakeProp",
+          "Bindings": {},
+          "Concat": []
+        }
+      }
+    }
+  },
+  "SchemaVersion": "1.0"
 }

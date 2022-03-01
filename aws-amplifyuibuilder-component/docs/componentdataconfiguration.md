@@ -10,8 +10,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "<a href="#model" title="Model">Model</a>" : <i>String</i>,
     "<a href="#sort" title="Sort">Sort</a>" : <i>[ <a href="sortproperty.md">SortProperty</a>, ... ]</i>,
-    "<a href="#identifiers" title="Identifiers">Identifiers</a>" : <i>[ String, ... ]</i>,
-    "<a href="#predicate" title="Predicate">Predicate</a>" : <i><a href="predicate.md">Predicate</a></i>
+    "<a href="#predicate" title="Predicate">Predicate</a>" : <i><a href="predicate.md">Predicate</a></i>,
+    "<a href="#identifiers" title="Identifiers">Identifiers</a>" : <i>[ String, ... ]</i>
 }
 </pre>
 
@@ -21,9 +21,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#model" title="Model">Model</a>: <i>String</i>
 <a href="#sort" title="Sort">Sort</a>: <i>
       - <a href="sortproperty.md">SortProperty</a></i>
+<a href="#predicate" title="Predicate">Predicate</a>: <i><a href="predicate.md">Predicate</a></i>
 <a href="#identifiers" title="Identifiers">Identifiers</a>: <i>
       - String</i>
-<a href="#predicate" title="Predicate">Predicate</a>: <i><a href="predicate.md">Predicate</a></i>
 </pre>
 
 ## Properties
@@ -44,6 +44,14 @@ _Type_: List of <a href="sortproperty.md">SortProperty</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Predicate
+
+_Required_: No
+
+_Type_: <a href="predicate.md">Predicate</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### Identifiers
 
 _Required_: No
@@ -52,10 +60,3 @@ _Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Predicate
-
-_Required_: No
-
-_Type_: <a href="predicate.md">Predicate</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)

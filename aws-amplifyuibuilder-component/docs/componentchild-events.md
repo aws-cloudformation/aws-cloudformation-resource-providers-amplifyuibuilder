@@ -1,4 +1,4 @@
-# AWS::AmplifyUIBuilder::Component ComponentVariant VariantValues
+# AWS::AmplifyUIBuilder::Component ComponentChild Events
 
 ## Syntax
 
@@ -8,14 +8,14 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#.+" title=".+">.+</a>" : <i><a href="overrides-.+.md">.+</a></i>
+    "<a href="#.+" title=".+">.+</a>" : <i><a href="componentevent.md">ComponentEvent</a></i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#.+" title=".+">.+</a>: <i><a href="overrides-.+.md">.+</a></i>
+<a href="#.+" title=".+">.+</a>: <i><a href="componentevent.md">ComponentEvent</a></i>
 </pre>
 
 ## Properties
@@ -24,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 _Required_: No
 
-_Type_: <a href="overrides-.+.md">.+</a>
+_Type_: <a href="componentevent.md">ComponentEvent</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

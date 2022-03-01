@@ -27,6 +27,7 @@ public class AbstractTestBase {
   protected static String ENV_NAME = "dev";
   protected static String TYPE = "Collection";
   protected static String NEXT_TOKEN = "next";
+  protected static String SCHEMA_VERSION = "1.0.0";
   protected static Map<String, String> TAGS = Collections.singletonMap("Stage", "Dev");
   protected static Map<String, Map<String, String>> OVERRIDES = Collections.singletonMap("label", Collections.singletonMap("test", "test"));
   protected static List<ComponentVariant> VARIANT_CFN = buildTestVariants();
@@ -34,6 +35,54 @@ public class AbstractTestBase {
   protected static Map<String, ComponentProperty> PROPERTIES_CFN = buildTestProperties();
   protected static Map<String, ComponentDataConfiguration> COLLECTION_PROPERTIES_CFN = buildTestCollectionProperties();
   protected static List<ComponentChild> CHILDREN_CFN = buildTestComponentChildren();
+  protected static Map<String, ComponentEvent> EVENTS_CFN = buildTestComponentEvents();
+
+  private static Map<String, ComponentEvent> buildTestComponentEvents() {
+    Map<String, ComponentEvent> events = new HashMap<>();
+    events.put("click", ComponentEvent.builder()
+        .action("Amplify.AuthSignOut")
+        .parameters(ActionParameters.builder()
+              .fields(Collections.singletonMap("username", ComponentProperty.builder()
+                .componentName("FakeComponent")
+                .property("fakeProp")
+                .build()))
+            .build())
+        .build());
+    // Most likely impossible to have all these fields on one event, but more efficient for code coverage
+    events.put("mouseover", ComponentEvent.builder()
+            .action("Amplify.Navigation")
+            .parameters(ActionParameters.builder()
+                .type(ComponentProperty.builder()
+                    .value("url")
+                    .build())
+                .url(ComponentProperty.builder()
+                    .value("https://www.amazon.com/")
+                    .build())
+                .anchor(ComponentProperty.builder()
+                    .value("https://www.amazon.com/")
+                    .build())
+                .model("FakeModel")
+                .id(ComponentProperty.builder()
+                    .value("1234")
+                    .build())
+                .fields(Collections.singletonMap("Stage", ComponentProperty.builder()
+                    .value("1234")
+                    .build()))
+                .target(ComponentProperty.builder()
+                    .value("_blank")
+                    .build())
+                .state(MutationActionSetStateParameter.builder()
+                    .componentName("FakeComponent")
+                    .property("fakeProp")
+                    .set(ComponentProperty.builder()
+                        .value("a mutation")
+                        .build())
+                    .build())
+                .build())
+        .build());
+
+    return events;
+  }
 
   private static List<ComponentChild> buildTestComponentChildren() {
     List<ComponentChild> parent = new ArrayList<>();
@@ -76,7 +125,6 @@ public class AbstractTestBase {
         .builder()
         .model("User")
         .identifiers(ImmutableList.of("abcdefg", "1234567"))
-            .predicate(null)
         .sort(ImmutableList.of(SortProperty.builder().direction("ASC").field("testField").build()))
         .build());
     collectionProperties.put("inputUser", ComponentDataConfiguration
@@ -106,7 +154,6 @@ public class AbstractTestBase {
         .build());
     properties.put("backgroundColor", ComponentProperty
         .builder()
-        .condition(null)
         .bindingProperties(
             ComponentPropertyBindingProperties
                 .builder()

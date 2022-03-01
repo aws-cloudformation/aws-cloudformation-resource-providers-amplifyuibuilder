@@ -9,9 +9,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#componenttype" title="ComponentType">ComponentType</a>" : <i>String</i>,
-    "<a href="#children" title="Children">Children</a>" : <i>[ <a href="componentchild.md">ComponentChild</a>, ... ]</i>,
+    "<a href="#name" title="Name">Name</a>" : <i>String</i>,
     "<a href="#properties" title="Properties">Properties</a>" : <i><a href="componentchild-properties.md">Properties</a></i>,
-    "<a href="#name" title="Name">Name</a>" : <i>String</i>
+    "<a href="#children" title="Children">Children</a>" : <i>[ <a href="componentchild.md">ComponentChild</a>, ... ]</i>,
+    "<a href="#events" title="Events">Events</a>" : <i><a href="componentchild-events.md">Events</a></i>
 }
 </pre>
 
@@ -19,10 +20,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#componenttype" title="ComponentType">ComponentType</a>: <i>String</i>
+<a href="#name" title="Name">Name</a>: <i>String</i>
+<a href="#properties" title="Properties">Properties</a>: <i><a href="componentchild-properties.md">Properties</a></i>
 <a href="#children" title="Children">Children</a>: <i>
       - <a href="componentchild.md">ComponentChild</a></i>
-<a href="#properties" title="Properties">Properties</a>: <i><a href="componentchild-properties.md">Properties</a></i>
-<a href="#name" title="Name">Name</a>: <i>String</i>
+<a href="#events" title="Events">Events</a>: <i><a href="componentchild-events.md">Events</a></i>
 </pre>
 
 ## Properties
@@ -35,11 +37,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Children
+#### Name
 
-_Required_: No
+_Required_: Yes
 
-_Type_: List of <a href="componentchild.md">ComponentChild</a>
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -51,10 +53,19 @@ _Type_: <a href="componentchild-properties.md">Properties</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Name
+#### Children
 
-_Required_: Yes
+_Required_: No
 
-_Type_: String
+_Type_: List of <a href="componentchild.md">ComponentChild</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Events
+
+_Required_: No
+
+_Type_: <a href="componentchild-events.md">Events</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+

@@ -75,6 +75,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .collectionProperties(Translator.translateCollectionPropertiesFromCFNToSDK(COLLECTION_PROPERTIES_CFN))
                 .children(Translator.translateChildComponentsFromCFNToSDK(CHILDREN_CFN))
                 .tags(TAGS)
+                .schemaVersion(SCHEMA_VERSION)
                 .build()
         )
         .build();
@@ -110,6 +111,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         .properties(PROPERTIES_CFN)
         .collectionProperties(COLLECTION_PROPERTIES_CFN)
         .children(CHILDREN_CFN)
+        .schemaVersion(SCHEMA_VERSION)
         .build();
 
     CallbackContext context = new CallbackContext();
@@ -128,19 +130,19 @@ public class UpdateHandlerTest extends AbstractTestBase {
     );
 
     ResourceModel component = response.getResourceModel();
-    ResourceModel updatedComponent = request.getDesiredResourceState();
 
     assertThat(response.getResourceModels()).isNull();
-    assertThat(component.getAppId()).isEqualTo(updatedComponent.getAppId());
-    assertThat(component.getEnvironmentName()).isEqualTo(updatedComponent.getEnvironmentName());
-    assertThat(component.getId()).isEqualTo(updatedComponent.getId());
-    assertThat(component.getComponentType()).isEqualTo(updatedComponent.getComponentType());
-    assertThat(component.getName()).isEqualTo(updatedComponent.getName());
-    assertThat(component.getVariants().size()).isEqualTo(updatedComponent.getVariants().size());
-    assertThat(component.getBindingProperties().keySet()).isEqualTo(updatedComponent.getBindingProperties().keySet());
-    assertThat(component.getOverrides()).isEqualTo(updatedComponent.getOverrides());
-    assertThat(component.getProperties().keySet()).isEqualTo(updatedComponent.getProperties().keySet());
-    assertThat(component.getCollectionProperties().keySet()).isEqualTo(updatedComponent.getCollectionProperties().keySet());
-    assertThat(component.getChildren().size()).isEqualTo(updatedComponent.getChildren().size());
+    assertThat(component.getAppId()).isEqualTo(model.getAppId());
+    assertThat(component.getEnvironmentName()).isEqualTo(model.getEnvironmentName());
+    assertThat(component.getId()).isEqualTo(model.getId());
+    assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
+    assertThat(component.getName()).isEqualTo(model.getName());
+    assertThat(component.getSchemaVersion()).isEqualTo(model.getSchemaVersion());
+    assertThat(component.getVariants().size()).isEqualTo(model.getVariants().size());
+    assertThat(component.getBindingProperties().keySet()).isEqualTo(model.getBindingProperties().keySet());
+    assertThat(component.getOverrides()).isEqualTo(model.getOverrides());
+    assertThat(component.getProperties().keySet()).isEqualTo(model.getProperties().keySet());
+    assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
+    assertThat(component.getChildren().size()).isEqualTo(model.getChildren().size());
   }
 }

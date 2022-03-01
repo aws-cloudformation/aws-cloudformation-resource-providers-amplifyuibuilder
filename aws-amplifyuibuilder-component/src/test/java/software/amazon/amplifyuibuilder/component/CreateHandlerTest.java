@@ -76,6 +76,8 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .properties(Translator.translatePropertiesFromCFNToSDK(PROPERTIES_CFN))
                 .collectionProperties(Translator.translateCollectionPropertiesFromCFNToSDK(COLLECTION_PROPERTIES_CFN))
                 .children(Translator.translateChildComponentsFromCFNToSDK(CHILDREN_CFN))
+                .events(Translator.translateEventsFromCFNToSDK(EVENTS_CFN))
+                .schemaVersion(SCHEMA_VERSION)
                 .tags(TAGS)
                 .build()
         )
@@ -115,6 +117,8 @@ public class CreateHandlerTest extends AbstractTestBase {
         .tags(TAGS)
         .children(CHILDREN_CFN)
         .collectionProperties(COLLECTION_PROPERTIES_CFN)
+        .events(EVENTS_CFN)
+        .schemaVersion(SCHEMA_VERSION)
         .build();
 
     CallbackContext context = new CallbackContext();
@@ -148,8 +152,11 @@ public class CreateHandlerTest extends AbstractTestBase {
     assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
     assertThat(component.getTags()).isEqualTo(model.getTags());
     assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
+    assertThat(component.getEvents().keySet()).isEqualTo(model.getEvents().keySet());
+    assertThat(component.getSchemaVersion()).isEqualTo(model.getSchemaVersion());
   }
 
+  // Tests resource model with null properties
   @Test
   public void handleRequest_NullProperties() {
     final CreateHandler handler = new CreateHandler();
@@ -173,14 +180,12 @@ public class CreateHandlerTest extends AbstractTestBase {
         .desiredResourceState(model)
         .build();
 
-    Assertions.assertThrows(CfnInvalidRequestException.class, () -> {
-      handler.handleRequest(
-        proxy,
-        request,
-        context,
-        proxyClient,
-        logger
-      );
-    });
+    Assertions.assertThrows(CfnInvalidRequestException.class, () -> handler.handleRequest(
+      proxy,
+      request,
+      context,
+      proxyClient,
+      logger
+    ));
   }
 }

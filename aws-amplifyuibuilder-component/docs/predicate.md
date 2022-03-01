@@ -8,10 +8,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#operator" title="Operator">Operator</a>" : <i>String</i>,
-    "<a href="#field" title="Field">Field</a>" : <i>String</i>,
     "<a href="#or" title="Or">Or</a>" : <i>[ <a href="predicate.md">Predicate</a>, ... ]</i>,
     "<a href="#and" title="And">And</a>" : <i>[ <a href="predicate.md">Predicate</a>, ... ]</i>,
+    "<a href="#field" title="Field">Field</a>" : <i>String</i>,
+    "<a href="#operator" title="Operator">Operator</a>" : <i>String</i>,
     "<a href="#operand" title="Operand">Operand</a>" : <i>String</i>
 }
 </pre>
@@ -19,32 +19,16 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#operator" title="Operator">Operator</a>: <i>String</i>
-<a href="#field" title="Field">Field</a>: <i>String</i>
 <a href="#or" title="Or">Or</a>: <i>
       - <a href="predicate.md">Predicate</a></i>
 <a href="#and" title="And">And</a>: <i>
       - <a href="predicate.md">Predicate</a></i>
+<a href="#field" title="Field">Field</a>: <i>String</i>
+<a href="#operator" title="Operator">Operator</a>: <i>String</i>
 <a href="#operand" title="Operand">Operand</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### Operator
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Field
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Or
 
@@ -62,6 +46,22 @@ _Type_: List of <a href="predicate.md">Predicate</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Field
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Operator
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### Operand
 
 _Required_: No
@@ -69,3 +69,4 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+

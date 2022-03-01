@@ -1,7 +1,6 @@
 {
   "AppId": "wrongAppId",
   "EnvironmentName": "staging",
-  "Id": "",
   "Name": "CustomButton",
   "ComponentType": "Button",
   "Variants": [],
