@@ -1,5 +1,6 @@
 package software.amazon.amplifyuibuilder.theme;
 
+import software.amazon.amplifyuibuilder.common.ClientWrapper;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.DeleteThemeResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -19,7 +20,7 @@ public class DeleteHandler extends BaseHandlerStd {
         final Logger logger) {
 
         this.logger = logger;
-      ResourceModel model = request.getDesiredResourceState();
+        ResourceModel model = request.getDesiredResourceState();
 
       return ProgressEvent.progress(model, callbackContext)
             .then(progress ->

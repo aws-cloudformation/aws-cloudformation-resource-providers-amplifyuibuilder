@@ -1,4 +1,4 @@
-package software.amazon.amplifyuibuilder.theme;
+package software.amazon.amplifyuibuilder.common;
 
 import org.apache.http.HttpStatus;
 import software.amazon.awssdk.awscore.AwsRequest;

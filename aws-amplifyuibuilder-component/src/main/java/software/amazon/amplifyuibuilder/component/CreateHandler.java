@@ -1,5 +1,6 @@
 package software.amazon.amplifyuibuilder.component;
 
+import software.amazon.amplifyuibuilder.common.ClientWrapper;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.CreateComponentResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -33,7 +34,14 @@ public class CreateHandler extends BaseHandlerStd {
                 )
                 .translateToServiceRequest(Translator::translateToCreateRequest)
                 .makeServiceCall((createComponentRequest, proxyInvocation) -> {
-                  CreateComponentResponse response = createComponent(createComponentRequest, proxyInvocation);
+                  CreateComponentResponse response = (CreateComponentResponse) ClientWrapper.execute(
+                      proxy,
+                      createComponentRequest,
+                      proxyInvocation.client()::createComponent,
+                      ResourceModel.TYPE_NAME,
+                      model.getId(),
+                      logger
+                  );
                   logger.log("Successfully created component with id: " + response.entity().id());
                   // Set the ID from the created component to do a read request next
                   model.setId(response.entity().id());

@@ -1,5 +1,6 @@
 package software.amazon.amplifyuibuilder.theme;
 
+import software.amazon.amplifyuibuilder.common.ClientWrapper;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ListThemesRequest;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ListThemesResponse;

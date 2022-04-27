@@ -1,5 +1,6 @@
 package software.amazon.amplifyuibuilder.component;
 
+import software.amazon.amplifyuibuilder.common.ClientWrapper;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ListComponentsRequest;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ListComponentsResponse;
@@ -18,7 +19,6 @@ public class ListHandler extends BaseHandlerStd {
       final Logger logger
   ) {
     this.logger = logger;
-    logger.log("ListHandler invoked");
     // Construct a body of a request
     final ListComponentsRequest listRequest = Translator.translateToListRequest(
         request.getNextToken(),
@@ -27,7 +27,14 @@ public class ListHandler extends BaseHandlerStd {
     logger.log("translateToListRequest succeeded");
 
     // Make getComponents api call
-    ListComponentsResponse listComponentsResponse = proxyClient.injectCredentialsAndInvokeV2(listRequest, proxyClient.client()::listComponents);
+    ListComponentsResponse listComponentsResponse = (ListComponentsResponse) ClientWrapper.execute(
+        proxy,
+        listRequest,
+        proxyClient.client()::listComponents,
+        ResourceModel.TYPE_NAME,
+        logger
+    ) ;
+
     logger.log("getComponents request succeeded for appId: " + listRequest.appId() + " envName: " + listRequest.environmentName());
     // Get a token for the next page
     String nextToken = listComponentsResponse.nextToken();

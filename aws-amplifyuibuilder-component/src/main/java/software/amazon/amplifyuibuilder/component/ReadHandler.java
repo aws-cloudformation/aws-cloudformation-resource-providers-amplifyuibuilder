@@ -1,5 +1,6 @@
 package software.amazon.amplifyuibuilder.component;
 
+import software.amazon.amplifyuibuilder.common.ClientWrapper;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.GetComponentResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -9,6 +10,7 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class ReadHandler extends BaseHandlerStd {
+  private Logger logger;
 
   protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
       final AmazonWebServicesClientProxy proxy,
@@ -20,17 +22,17 @@ public class ReadHandler extends BaseHandlerStd {
     this.logger = logger;
 
     ResourceModel model = request.getDesiredResourceState();
-    logger.log("ReadHandler invoked");
-    return proxy
-        .initiate(
-            "AWS-AmplifyUIBuilder-Component::Read",
-            proxyClient,
-            model,
-            callbackContext
-        )
+    return proxy.initiate("AWS-AmplifyUIBuilder-Component::Read", proxyClient, model, callbackContext)
         .translateToServiceRequest(Translator::translateToReadRequest)
         .makeServiceCall((getComponentRequest, proxyInvocation) -> {
-          GetComponentResponse response = getComponent(getComponentRequest, proxyInvocation);
+          GetComponentResponse response = (GetComponentResponse) ClientWrapper.execute(
+              proxy,
+              getComponentRequest,
+              proxyInvocation.client()::getComponent,
+              ResourceModel.TYPE_NAME,
+              model.getId(),
+              logger
+          );
           logger.log("getComponent succeeded with component ID: " + response.component().id());
           return response;
         })
