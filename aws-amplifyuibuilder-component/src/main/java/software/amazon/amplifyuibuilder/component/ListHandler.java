@@ -33,7 +33,7 @@ public class ListHandler extends BaseHandlerStd {
         proxyClient.client()::listComponents,
         ResourceModel.TYPE_NAME,
         logger
-    ) ;
+    );
 
     logger.log("getComponents request succeeded for appId: " + listRequest.appId() + " envName: " + listRequest.environmentName());
     // Get a token for the next page

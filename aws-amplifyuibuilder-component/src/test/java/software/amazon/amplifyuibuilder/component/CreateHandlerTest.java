@@ -181,11 +181,11 @@ public class CreateHandlerTest extends AbstractTestBase {
         .build();
 
     Assertions.assertThrows(CfnInvalidRequestException.class, () -> handler.handleRequest(
-      proxy,
-      request,
-      context,
-      proxyClient,
-      logger
+        proxy,
+        request,
+        context,
+        proxyClient,
+        logger
     ));
   }
 }

@@ -1,12 +1,5 @@
 package software.amazon.amplifyuibuilder.theme;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-
 import com.google.common.collect.ImmutableList;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
@@ -18,6 +11,13 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Credentials;
 import software.amazon.cloudformation.proxy.LoggerProxy;
 import software.amazon.cloudformation.proxy.ProxyClient;
+
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class AbstractTestBase {
   protected static final Credentials MOCK_CREDENTIALS;
@@ -32,34 +32,35 @@ public class AbstractTestBase {
           .key("colorMode")
           .value(ThemeValue.builder().value("dark").build())
           .build(),
-          ThemeValues.builder()
-              .key("tokens")
-              .value(ThemeValue.builder()
-                  .children(ImmutableList.of(ThemeValues.builder()
-                        .key("colors")
+      ThemeValues.builder()
+          .key("tokens")
+          .value(ThemeValue.builder()
+              .children(ImmutableList.of(ThemeValues.builder()
+                  .key("colors")
+                  .value(ThemeValue.builder()
+                      .children(ImmutableList.of(ThemeValues.builder()
+                          .key("black")
                           .value(ThemeValue.builder()
                               .children(ImmutableList.of(ThemeValues.builder()
-                                      .key("black")
-                                      .value(ThemeValue.builder()
-                                          .children(ImmutableList.of(ThemeValues.builder()
-                                                  .value(ThemeValue.builder()
-                                                      .value("#fff")
-                                                      .build())
-                                              .build()))
-                                          .build())
+                                  .value(ThemeValue.builder()
+                                      .value("#fff")
+                                      .build())
                                   .build()))
                               .build())
-                      .build()))
-                  .build())
-              .build());
+                          .build()))
+                      .build())
+                  .build()))
+              .build())
+          .build());
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");
     logger = new LoggerProxy();
   }
+
   static ProxyClient<AmplifyUiBuilderClient> MOCK_PROXY(
-    final AmazonWebServicesClientProxy proxy,
-    final AmplifyUiBuilderClient sdkClient) {
+      final AmazonWebServicesClientProxy proxy,
+      final AmplifyUiBuilderClient sdkClient) {
     return new ProxyClient<AmplifyUiBuilderClient>() {
       @Override
       public <RequestT extends AwsRequest, ResponseT extends AwsResponse> ResponseT

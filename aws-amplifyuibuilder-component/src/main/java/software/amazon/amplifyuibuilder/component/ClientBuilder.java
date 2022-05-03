@@ -7,8 +7,8 @@ public class ClientBuilder {
 
   public static AmplifyUiBuilderClient getClient() {
     return AmplifyUiBuilderClient
-      .builder()
-      .httpClient(LambdaWrapper.HTTP_CLIENT)
-      .build();
+        .builder()
+        .httpClient(LambdaWrapper.HTTP_CLIENT)
+        .build();
   }
 }

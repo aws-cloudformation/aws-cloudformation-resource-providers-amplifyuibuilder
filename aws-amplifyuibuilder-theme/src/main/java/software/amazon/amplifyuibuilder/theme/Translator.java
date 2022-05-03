@@ -11,15 +11,16 @@ import java.util.stream.Stream;
 
 /**
  * This class is a centralized placeholder for
- *  - api request construction
- *  - object translation to/from aws sdk
- *  - resource model construction for read/list handlers
+ * - api request construction
+ * - object translation to/from aws sdk
+ * - resource model construction for read/list handlers
  */
 
 public class Translator {
 
   /**
    * Request to create a resource
+   *
    * @param model resource model
    * @return awsRequest the aws service request to create a resource
    */
@@ -39,6 +40,7 @@ public class Translator {
 
   /**
    * Request to read a resource
+   *
    * @param model resource model
    * @return awsRequest the aws service request to describe a resource
    */
@@ -53,6 +55,7 @@ public class Translator {
 
   /**
    * Translates resource object from sdk into a resource model
+   *
    * @param response the aws service describe resource response
    * @return model resource model
    */
@@ -73,6 +76,7 @@ public class Translator {
 
   /**
    * Request to delete a resource
+   *
    * @param model resource model
    * @return awsRequest the aws service request to delete a resource
    */
@@ -86,6 +90,7 @@ public class Translator {
 
   /**
    * Request to update properties of a previously created resource
+   *
    * @param model resource model
    * @return awsRequest the aws service request to modify a resource
    */
@@ -106,6 +111,7 @@ public class Translator {
 
   /**
    * Request to list resources
+   *
    * @param nextToken token passed to the aws service list resources request
    * @return awsRequest the aws service request to list resources within aws account
    */
@@ -120,6 +126,7 @@ public class Translator {
 
   /**
    * Translates resource objects from sdk into a resource model (primary identifier only)
+   *
    * @param response the aws service describe resource response
    * @return list of resource models
    */
