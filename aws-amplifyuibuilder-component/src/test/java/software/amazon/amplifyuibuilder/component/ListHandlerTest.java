@@ -1,9 +1,5 @@
 package software.amazon.amplifyuibuilder.component;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +14,9 @@ import software.amazon.awssdk.services.amplifyuibuilder.model.ListComponentsResp
 import software.amazon.cloudformation.proxy.*;
 
 import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ListHandlerTest extends AbstractTestBase {

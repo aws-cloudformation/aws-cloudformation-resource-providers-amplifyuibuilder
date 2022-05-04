@@ -1,9 +1,5 @@
 package software.amazon.amplifyuibuilder.component;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import software.amazon.awssdk.awscore.AwsRequest;
@@ -16,6 +12,10 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Credentials;
 import software.amazon.cloudformation.proxy.LoggerProxy;
 import software.amazon.cloudformation.proxy.ProxyClient;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class AbstractTestBase {
 
