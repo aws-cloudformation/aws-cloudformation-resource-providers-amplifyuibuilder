@@ -14,6 +14,7 @@ import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static software.amazon.amplifyuibuilder.common.Transformer.transformList;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest extends AbstractTestBase {
@@ -52,8 +53,8 @@ public class CreateHandlerTest extends AbstractTestBase {
             .name(NAME)
             .createdAt(NOW)
             .modifiedAt(NOW)
-            .values(Translator.translateThemeValuesListFromCFNToSDK(THEME_VALUES_LIST))
-            .overrides(Translator.translateThemeValuesListFromCFNToSDK(THEME_VALUES_LIST))
+            .values(transformList(THEME_VALUES_LIST, Translator::translateThemeValuesFromCFNToSDK))
+            .overrides(transformList(THEME_VALUES_LIST, Translator::translateThemeValuesFromCFNToSDK))
             .tags(TAGS)
             .build())
         .build();

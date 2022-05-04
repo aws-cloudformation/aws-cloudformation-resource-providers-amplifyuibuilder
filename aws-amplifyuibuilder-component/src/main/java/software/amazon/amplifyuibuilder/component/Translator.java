@@ -1,11 +1,5 @@
 package software.amazon.amplifyuibuilder.component;
 
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import software.amazon.awssdk.services.amplifyuibuilder.model.*;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ActionParameters;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentBindingPropertiesValue;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentBindingPropertiesValueProperties;
@@ -16,12 +10,19 @@ import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentEvent;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentProperty;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentPropertyBindingProperties;
 import software.amazon.awssdk.services.amplifyuibuilder.model.ComponentVariant;
-import software.amazon.awssdk.services.amplifyuibuilder.model.CreateComponentData;
 import software.amazon.awssdk.services.amplifyuibuilder.model.FormBindingElement;
 import software.amazon.awssdk.services.amplifyuibuilder.model.MutationActionSetStateParameter;
 import software.amazon.awssdk.services.amplifyuibuilder.model.Predicate;
 import software.amazon.awssdk.services.amplifyuibuilder.model.SortProperty;
-import software.amazon.awssdk.services.amplifyuibuilder.model.UpdateComponentData;
+import software.amazon.awssdk.services.amplifyuibuilder.model.*;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static software.amazon.amplifyuibuilder.common.Transformer.*;
 
 /**
  * This class is a centralized placeholder for
@@ -31,28 +32,6 @@ import software.amazon.awssdk.services.amplifyuibuilder.model.UpdateComponentDat
  */
 
 public class Translator {
-
-  /**
-   * Transforms elements of collection with given function and returns list with transformed elements
-   *
-   * @param collection Collection to transform
-   * @param function   function used to transformList elements of collection
-   * @param <T>        Type of elements returned by the function
-   * @param <K>        Type of the elements in the collection to be transformed
-   * @return List of transformed elements
-   */
-  static <T, K> List<T> transformList(Collection<K> collection, final java.util.function.Function<K, T> function) {
-    return Optional.ofNullable(collection).orElse(Collections.emptyList()).stream().map(function).collect(Collectors.toList());
-  }
-
-  static <T, K> Map<String, T> transformMap(Map<String, K> collection, final java.util.function.Function<K, T> function) {
-    return Optional.ofNullable(collection).orElse(Collections.emptyMap()).entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> function.apply(e.getValue())));
-  }
-
-  static <T, K> K transformObj(T obj, java.util.function.Function<T, K> function) {
-    return obj == null ? null : function.apply(obj);
-  }
-
   /**
    * Request to create a resource
    *
