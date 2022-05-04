@@ -1,15 +1,5 @@
 package software.amazon.amplifyuibuilder.component;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.Duration;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,13 +8,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
-import software.amazon.awssdk.services.amplifyuibuilder.model.*;
+import software.amazon.awssdk.services.amplifyuibuilder.model.CreateComponentRequest;
+import software.amazon.awssdk.services.amplifyuibuilder.model.CreateComponentResponse;
+import software.amazon.awssdk.services.amplifyuibuilder.model.GetComponentRequest;
+import software.amazon.awssdk.services.amplifyuibuilder.model.GetComponentResponse;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ProxyClient;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.*;
+
+import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static software.amazon.amplifyuibuilder.common.Transformer.transformList;
+import static software.amazon.amplifyuibuilder.common.Transformer.transformMap;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest extends AbstractTestBase {
@@ -70,13 +67,13 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .appId(APP_ID)
                 .environmentName(ENV_NAME)
                 .componentType(TYPE)
-                .variants(Translator.transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
-                .bindingProperties(Translator.transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
+                .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
+                .bindingProperties(transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
                 .overrides(OVERRIDES)
-                .properties(Translator.transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
-                .collectionProperties(Translator.transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
-                .children(Translator.transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
-                .events(Translator.transformMap(EVENTS_CFN, Translator::translateEventFromCFNToSDK))
+                .properties(transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
+                .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
+                .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
+                .events(transformMap(EVENTS_CFN, Translator::translateEventFromCFNToSDK))
                 .schemaVersion(SCHEMA_VERSION)
                 .tags(TAGS)
                 .build()
