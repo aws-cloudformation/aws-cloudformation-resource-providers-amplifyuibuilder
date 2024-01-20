@@ -14,7 +14,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#userattribute" title="UserAttribute">UserAttribute</a>" : <i>String</i>,
     "<a href="#bucket" title="Bucket">Bucket</a>" : <i>String</i>,
     "<a href="#key" title="Key">Key</a>" : <i>String</i>,
-    "<a href="#defaultvalue" title="DefaultValue">DefaultValue</a>" : <i>String</i>
+    "<a href="#defaultvalue" title="DefaultValue">DefaultValue</a>" : <i>String</i>,
+    "<a href="#slotname" title="SlotName">SlotName</a>" : <i>String</i>
 }
 </pre>
 
@@ -29,6 +30,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#bucket" title="Bucket">Bucket</a>: <i>String</i>
 <a href="#key" title="Key">Key</a>: <i>String</i>
 <a href="#defaultvalue" title="DefaultValue">DefaultValue</a>: <i>String</i>
+<a href="#slotname" title="SlotName">SlotName</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -88,3 +90,12 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SlotName
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+

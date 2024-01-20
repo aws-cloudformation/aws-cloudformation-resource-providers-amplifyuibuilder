@@ -1,0 +1,40 @@
+{
+  "desiredResourceState": {
+    "AppId": "replace_with_id",
+    "EnvironmentName": "staging",
+    "ThemeToCreate": {
+      "Name": "TestTheme",
+      "Values": [
+        {
+          "key": "tokens",
+          "value": {
+            "children": [
+              {
+                "key": "components",
+                "value": {
+                  "children": [
+                    {
+                      "key": "alert",
+                      "value": {
+                        "children": [
+                          {
+                            "key": "backgroundcolor",
+                            "value": {
+                              "value": "hsl(210, 5%, 90%)",
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "MyComponentResource"
+}

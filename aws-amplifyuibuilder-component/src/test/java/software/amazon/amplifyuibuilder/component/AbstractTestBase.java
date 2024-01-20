@@ -89,6 +89,7 @@ public class AbstractTestBase {
     Map<String, ComponentProperty> childProperties = new HashMap<>();
     childProperties.put("label", ComponentProperty
         .builder()
+        .bindings(new HashMap<>())
         .collectionBindingProperties(
             ComponentPropertyBindingProperties
                 .builder()
@@ -96,21 +97,32 @@ public class AbstractTestBase {
                 .field("userName")
                 .build()
         )
+        .concat(Collections.emptyList())
         .defaultValue("test@mail.com")
         .build());
+
     List<ComponentChild> children = new ArrayList<>();
+
     children.add(ComponentChild
         .builder()
         .name("MyButton")
         .componentType("Button")
+        .events(new HashMap<>())
         .properties(childProperties)
+        .sourceId("1234")
+        .events(new HashMap<>())
+        .children(Collections.emptyList())
         .build()
     );
+
     ComponentChild componentChild = ComponentChild
         .builder()
         .name("Parent")
         .componentType("Flex")
         .properties(new HashMap<>())
+        .sourceId("5678")
+        .events(new HashMap<>())
+        .children(Collections.emptyList())
         .children(children)
         .build();
     parent.add(

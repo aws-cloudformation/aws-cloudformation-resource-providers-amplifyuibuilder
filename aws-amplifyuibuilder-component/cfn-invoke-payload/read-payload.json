@@ -1,0 +1,9 @@
+{
+  "desiredResourceState": {
+    "AppId": "replace_with_real_app_id",
+    "EnvironmentName": "staging",
+    "Id": "replace_with_real_component_id"
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "MyResource"
+}

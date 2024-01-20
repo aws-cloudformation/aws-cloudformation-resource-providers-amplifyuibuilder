@@ -31,10 +31,7 @@ public final class ClientWrapper {
       final Logger logger) {
     try {
       logger.log("Invoking with request: " + requestFunction + " | " + resourceTypeName + " | " + resourceTypeId);
-      logger.log("Sending Request: " + request.toString());
-      ResultT response = clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
-      logger.log("Response: " + response.toString());
-      return response;
+      return clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
     } catch (ResourceNotFoundException e) {
       logger.log("ERROR: " + e.getMessage());
       throw new CfnNotFoundException(resourceTypeName, resourceTypeId);
@@ -52,10 +49,17 @@ public final class ClientWrapper {
       if (e.statusCode() == HttpStatus.SC_NOT_FOUND) {
         throw new CfnNotFoundException(resourceTypeName, e.getMessage());
       }
+      if (e.statusCode() == HttpStatus.SC_FORBIDDEN) {
+        throw new CfnAccessDeniedException(resourceTypeName, e);
+      }
       throw new CfnGeneralServiceException(resourceTypeName, e);
     } catch (AwsServiceException e) {
       logger.log("ERROR: " + e.getMessage());
-      throw new CfnGeneralServiceException(e);
+      throw new CfnGeneralServiceException(e.getMessage(), e);
     }
+  }
+
+  public static String getUIBuilderEndpoint(String region) {
+    return String.format("https://amplifyuibuilder.%s.amazonaws.com", region != null ? region : "us-west-2");
   }
 }

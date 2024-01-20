@@ -16,9 +16,8 @@ import software.amazon.awssdk.services.amplifyuibuilder.model.Predicate;
 import software.amazon.awssdk.services.amplifyuibuilder.model.SortProperty;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,32 +39,51 @@ public class Translator {
    */
 
   // It's going to translate from:
-  // software.amazon.amplifyuibuilder.component
+  // software.amazon.amplifyuibuilder.componenttranslateChildFromSDKToCFN
   // to
   // software.amazon.awssdk.services.amplifyuibuilder.model
   static CreateComponentRequest translateToCreateRequest(
-      final ResourceModel model
-  ) {
+      final ResourceModel model,
+      final Map<String, String> desiredResourceTags,
+      final String requestToken) {
+    Map<String, String> tagsToCreate = getTagsToCreate(model, desiredResourceTags);
+
     CreateComponentRequest.Builder createComponentRequest = CreateComponentRequest
         .builder()
         .appId(model.getAppId())
-        .environmentName(model.getEnvironmentName());
+        .environmentName(model.getEnvironmentName())
+        .clientToken(requestToken);
 
     final CreateComponentData.Builder createComponent = CreateComponentData.builder();
     createComponent.name(model.getName());
     createComponent.componentType(model.getComponentType());
-    createComponent.bindingProperties(transformMap(model.getBindingProperties(), Translator::translateBindingPropertyFromCFNToSDK));
+    createComponent.bindingProperties(
+        transformMap(model.getBindingProperties(), Translator::translateBindingPropertyFromCFNToSDK));
     createComponent.children(transformList(model.getChildren(), Translator::translateChildComponentFromCFNToSDK));
     createComponent.overrides(model.getOverrides());
     createComponent.properties(transformMap(model.getProperties(), Translator::translateComponentPropertyFromCFNToSDK));
-    createComponent.tags(model.getTags());
     createComponent.variants(transformList(model.getVariants(), Translator::translateVariantFromCFNToSDK));
-    createComponent.collectionProperties(transformMap(model.getCollectionProperties(), Translator::translateCollectionPropertyFromCFNToSDK));
+    createComponent.collectionProperties(
+        transformMap(model.getCollectionProperties(), Translator::translateCollectionPropertyFromCFNToSDK));
     createComponent.events(transformMap(model.getEvents(), Translator::translateEventFromCFNToSDK));
     createComponent.schemaVersion(model.getSchemaVersion());
+    createComponent.sourceId(model.getSourceId());
+    createComponent.tags(tagsToCreate.isEmpty() ? null : tagsToCreate);
 
     createComponentRequest.componentToCreate(createComponent.build());
     return createComponentRequest.build();
+  }
+
+  private static Map<String, String> getTagsToCreate(final ResourceModel model,
+      final Map<String, String> desiredResourceTags) {
+    Map<String, String> tagsToCreate = new HashMap<>();
+    if (desiredResourceTags != null && !desiredResourceTags.isEmpty()) {
+      tagsToCreate.putAll(desiredResourceTags);
+    }
+    if (model.getTags() != null && !model.getTags().isEmpty()) {
+      tagsToCreate.putAll(model.getTags());
+    }
+    return tagsToCreate;
   }
 
   /**
@@ -90,25 +108,36 @@ public class Translator {
    * @return model resource model
    */
   static ResourceModel translateFromReadResponse(
-      final GetComponentResponse getComponentResponse
-  ) {
-    software.amazon.awssdk.services.amplifyuibuilder.model.Component componentResponse = getComponentResponse.component();
-    return ResourceModel.builder()
+      final GetComponentResponse getComponentResponse) {
+    software.amazon.awssdk.services.amplifyuibuilder.model.Component componentResponse = getComponentResponse
+        .component();
+
+    ResourceModel.ResourceModelBuilder model = ResourceModel.builder()
         .appId(componentResponse.appId())
         .id(componentResponse.id())
         .environmentName(componentResponse.environmentName())
         .componentType(componentResponse.componentType())
         .name(componentResponse.name())
-        .bindingProperties(transformMap(componentResponse.bindingProperties(), Translator::translateBindingPropertiesValueFromSDKToCFN))
+        .bindingProperties(transformMap(componentResponse.bindingProperties(),
+            Translator::translateBindingPropertiesValueFromSDKToCFN))
         .overrides(componentResponse.overrides())
         .tags(componentResponse.tags())
+        .sourceId(componentResponse.sourceId())
+        .createdAt(componentResponse.createdAt().toString())
+        .modifiedAt(componentResponse.modifiedAt().toString())
         .properties(transformMap(componentResponse.properties(), Translator::translateComponentPropertyFromSDKToCFN))
         .children(transformList(componentResponse.children(), Translator::translateChildFromSDKToCFN))
         .variants(transformList(componentResponse.variants(), Translator::translateVariantFromSDKToCFN))
-        .collectionProperties(transformMap(componentResponse.collectionProperties(), Translator::translateCollectionPropertyFromSDKToCFN))
+        .collectionProperties(
+            transformMap(componentResponse.collectionProperties(), Translator::translateCollectionPropertyFromSDKToCFN))
         .events(transformMap(componentResponse.events(), Translator::translateEventFromSDKToCFN))
-        .schemaVersion(componentResponse.schemaVersion())
-        .build();
+        .schemaVersion(componentResponse.schemaVersion());
+
+    if (componentResponse.sourceId() == null) {
+      model.sourceId("");
+    }
+
+    return model.build();
   }
 
   /**
@@ -118,8 +147,7 @@ public class Translator {
    * @return awsRequest the aws service request to delete a resource
    */
   static DeleteComponentRequest translateToDeleteRequest(
-      final ResourceModel model
-  ) {
+      final ResourceModel model) {
     return DeleteComponentRequest
         .builder()
         .appId(model.getAppId())
@@ -135,13 +163,15 @@ public class Translator {
    * @return awsRequest the aws service request to modify a resource
    */
   static UpdateComponentRequest translateToUpdateRequest(
-      final ResourceModel model
-  ) {
+      final ResourceModel model,
+      final Map<String, String> desiredResourceTags,
+      final String requestToken) {
     UpdateComponentRequest.Builder updateComponentRequest = UpdateComponentRequest
         .builder()
         .appId(model.getAppId())
         .environmentName(model.getEnvironmentName())
-        .id(model.getId());
+        .id(model.getId())
+        .clientToken(requestToken);
 
     UpdateComponentData.Builder updateComponentDataBuilder = UpdateComponentData.builder();
     updateComponentDataBuilder
@@ -153,8 +183,10 @@ public class Translator {
         .overrides(model.getOverrides())
         .properties(transformMap(model.getProperties(), Translator::translateComponentPropertyFromCFNToSDK))
         .variants(transformList(model.getVariants(), Translator::translateVariantFromCFNToSDK))
-        .collectionProperties(transformMap(model.getCollectionProperties(), Translator::translateCollectionPropertyFromCFNToSDK))
+        .collectionProperties(
+            transformMap(model.getCollectionProperties(), Translator::translateCollectionPropertyFromCFNToSDK))
         .events(transformMap(model.getEvents(), Translator::translateEventFromCFNToSDK))
+        .sourceId(model.getSourceId())
         .schemaVersion(model.getSchemaVersion());
 
     return updateComponentRequest.updatedComponent(updateComponentDataBuilder.build()).build();
@@ -164,7 +196,8 @@ public class Translator {
    * Request to list resources
    *
    * @param nextToken token passed to the aws service list resources request
-   * @return awsRequest the aws service request to list resources within aws account
+   * @return awsRequest the aws service request to list resources within aws
+   *         account
    */
   static ListComponentsRequest translateToListRequest(final String nextToken, final ResourceModel model) {
     return ListComponentsRequest.builder()
@@ -175,14 +208,14 @@ public class Translator {
   }
 
   /**
-   * Translates resource objects from sdk into a resource model (primary identifier only)
+   * Translates resource objects from sdk into a resource model (primary
+   * identifier only)
    *
    * @param listComponentsResponse the aws service describe resource response
    * @return list of resource models
    */
   static List<ResourceModel> translateFromListRequest(
-      final ListComponentsResponse listComponentsResponse
-  ) {
+      final ListComponentsResponse listComponentsResponse) {
     return streamOfOrEmpty(listComponentsResponse.entities())
         .map(resource -> ResourceModel.builder()
             .appId(resource.appId())
@@ -190,42 +223,50 @@ public class Translator {
             .id(resource.id())
             .name(resource.name())
             .componentType(resource.componentType())
-            .build()
-        )
+            .build())
         .collect(Collectors.toList());
   }
 
-  public static ComponentBindingPropertiesValue translateBindingPropertyFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue v) {
+  public static ComponentBindingPropertiesValue translateBindingPropertyFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue v) {
     ComponentBindingPropertiesValue.Builder bindingPropertiesValue = ComponentBindingPropertiesValue.builder();
-    // ComponentBindingPropertiesValue is flattened to include properties of many types.
-    // See StudioComponent.bindingProperties type in https://code.amazon.com/packages/AmplifyStudioCommon/blobs/mainline/--/src/types/index.ts
+    // ComponentBindingPropertiesValue is flattened to include properties of many
+    // types.
+    // See StudioComponent.bindingProperties type in
+    // https://code.amazon.com/packages/AmplifyStudioCommon/blobs/mainline/--/src/types/index.ts
     bindingPropertiesValue.type(v.getType());
     bindingPropertiesValue.defaultValue(v.getDefaultValue());
-    software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties valueProperties = v.getBindingProperties();
+    software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties valueProperties = v
+        .getBindingProperties();
     if (valueProperties != null) {
-      ComponentBindingPropertiesValueProperties.Builder bindingPropertiesValueProperties = ComponentBindingPropertiesValueProperties.builder();
+      ComponentBindingPropertiesValueProperties.Builder bindingPropertiesValueProperties = ComponentBindingPropertiesValueProperties
+          .builder();
       bindingPropertiesValueProperties.bucket(valueProperties.getBucket());
       bindingPropertiesValueProperties.field(valueProperties.getField());
       bindingPropertiesValueProperties.key(valueProperties.getKey());
       bindingPropertiesValueProperties.model(valueProperties.getModel());
-      bindingPropertiesValueProperties.predicates(transformList(valueProperties.getPredicates(), Translator::translatePredicateFromCFNToSDK));
+      bindingPropertiesValueProperties
+          .predicates(transformList(valueProperties.getPredicates(), Translator::translatePredicateFromCFNToSDK));
       bindingPropertiesValueProperties.userAttribute(valueProperties.getUserAttribute());
       bindingPropertiesValue.bindingProperties(bindingPropertiesValueProperties.build());
     }
     return bindingPropertiesValue.build();
   }
 
-  public static ComponentChild translateChildComponentFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentChild c) {
+  public static ComponentChild translateChildComponentFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentChild c) {
     return ComponentChild.builder()
         .componentType(c.getComponentType())
         .name(c.getName())
         .properties(transformMap(c.getProperties(), Translator::translateComponentPropertyFromCFNToSDK))
         .children(transformList(c.getChildren(), Translator::translateChildComponentFromCFNToSDK))
         .events(transformMap(c.getEvents(), Translator::translateEventFromCFNToSDK))
+        .sourceId(c.getSourceId())
         .build();
   }
 
-  public static ComponentDataConfiguration translateCollectionPropertyFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentDataConfiguration property) {
+  public static ComponentDataConfiguration translateCollectionPropertyFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentDataConfiguration property) {
     return ComponentDataConfiguration
         .builder()
         .identifiers(property.getIdentifiers())
@@ -243,14 +284,16 @@ public class Translator {
         .build();
   }
 
-  public static ComponentVariant translateVariantFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentVariant variant) {
+  public static ComponentVariant translateVariantFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentVariant variant) {
     return ComponentVariant.builder()
         .overrides(variant.getOverrides())
         .variantValues((variant.getVariantValues()))
         .build();
   }
 
-  private static ComponentConditionProperty translateConditionFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentConditionProperty condition) {
+  private static ComponentConditionProperty translateConditionFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentConditionProperty condition) {
     return ComponentConditionProperty
         .builder()
         .field(condition.getField())
@@ -262,8 +305,11 @@ public class Translator {
         .build();
   }
 
-  public static ComponentProperty translateComponentPropertyFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentProperty property) {
-    // ComponentProperty is flattened to include properties of many Component Property types.
+  public static ComponentProperty translateComponentPropertyFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentProperty property) {
+    // ComponentProperty is flattened to include properties of many Component
+    // Property types.
+
     return ComponentProperty
         .builder()
         .type(property.getType())
@@ -274,14 +320,18 @@ public class Translator {
         .value(property.getValue())
         .property(property.getProperty())
         .componentName(property.getComponentName())
-        .bindingProperties(transformObj(property.getBindingProperties(), Translator::translateComponentPropertyBindingPropertiesFromCFNToSDK))
+        .collectionBindingProperties(transformObj(property.getCollectionBindingProperties(),
+            Translator::translateComponentPropertyBindingPropertiesFromCFNToSDK))
+        .bindingProperties(transformObj(property.getBindingProperties(),
+            Translator::translateComponentPropertyBindingPropertiesFromCFNToSDK))
         .condition(transformObj(property.getCondition(), Translator::translateConditionFromCFNToSDK))
         .concat(transformList(property.getConcat(), Translator::translateComponentPropertyFromCFNToSDK))
         .bindings(transformMap(property.getBindings(), Translator::translateFormBindingElementFromCFNToSDK))
         .build();
   }
 
-  private static ComponentPropertyBindingProperties translateComponentPropertyBindingPropertiesFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentPropertyBindingProperties bindingProperties) {
+  private static ComponentPropertyBindingProperties translateComponentPropertyBindingPropertiesFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentPropertyBindingProperties bindingProperties) {
     return ComponentPropertyBindingProperties
         .builder()
         .field(bindingProperties.getField())
@@ -289,21 +339,24 @@ public class Translator {
         .build();
   }
 
-  private static FormBindingElement translateFormBindingElementFromCFNToSDK(software.amazon.amplifyuibuilder.component.FormBindingElement binding) {
+  private static FormBindingElement translateFormBindingElementFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.FormBindingElement binding) {
     return FormBindingElement.builder()
         .element(binding.getElement())
         .property(binding.getProperty())
         .build();
   }
 
-  public static ComponentEvent translateEventFromCFNToSDK(software.amazon.amplifyuibuilder.component.ComponentEvent event) {
+  public static ComponentEvent translateEventFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ComponentEvent event) {
     return ComponentEvent.builder()
         .action(event.getAction())
         .parameters(transformObj(event.getParameters(), Translator::translateEventParametersFromCFNToSDK))
         .build();
   }
 
-  private static ActionParameters translateEventParametersFromCFNToSDK(software.amazon.amplifyuibuilder.component.ActionParameters parameters) {
+  private static ActionParameters translateEventParametersFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.ActionParameters parameters) {
     return ActionParameters.builder()
         .type(transformObj(parameters.getType(), Translator::translateComponentPropertyFromCFNToSDK))
         .url(transformObj(parameters.getUrl(), Translator::translateComponentPropertyFromCFNToSDK))
@@ -317,7 +370,8 @@ public class Translator {
         .build();
   }
 
-  private static MutationActionSetStateParameter translateMutationActionSetStateParameterFromCFNToSDK(software.amazon.amplifyuibuilder.component.MutationActionSetStateParameter state) {
+  private static MutationActionSetStateParameter translateMutationActionSetStateParameterFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.MutationActionSetStateParameter state) {
     return MutationActionSetStateParameter.builder()
         .componentName(state.getComponentName())
         .property(state.getProperty())
@@ -325,7 +379,8 @@ public class Translator {
         .build();
   }
 
-  private static Predicate translatePredicateFromCFNToSDK(software.amazon.amplifyuibuilder.component.Predicate predicate) {
+  private static Predicate translatePredicateFromCFNToSDK(
+      software.amazon.amplifyuibuilder.component.Predicate predicate) {
     return Predicate
         .builder()
         .and(transformList(predicate.getAnd(), Translator::translatePredicateFromCFNToSDK))
@@ -336,7 +391,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentDataConfiguration translateCollectionPropertyFromSDKToCFN(ComponentDataConfiguration v) {
+  private static software.amazon.amplifyuibuilder.component.ComponentDataConfiguration translateCollectionPropertyFromSDKToCFN(
+      ComponentDataConfiguration v) {
     return software.amazon.amplifyuibuilder.component.ComponentDataConfiguration.builder()
         .model(v.model())
         .identifiers(v.identifiers())
@@ -345,7 +401,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.Predicate translatePredicateFromSDKToCFN(Predicate predicate) {
+  private static software.amazon.amplifyuibuilder.component.Predicate translatePredicateFromSDKToCFN(
+      Predicate predicate) {
     return software.amazon.amplifyuibuilder.component.Predicate
         .builder()
         .operator(predicate.operator())
@@ -364,30 +421,42 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentVariant translateVariantFromSDKToCFN(ComponentVariant variant) {
+  private static software.amazon.amplifyuibuilder.component.ComponentVariant translateVariantFromSDKToCFN(
+      ComponentVariant variant) {
     return software.amazon.amplifyuibuilder.component.ComponentVariant.builder()
         .variantValues(variant.variantValues())
         .overrides(variant.overrides())
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentChild translateChildFromSDKToCFN(ComponentChild child) {
-    return software.amazon.amplifyuibuilder.component.ComponentChild.builder()
+  private static software.amazon.amplifyuibuilder.component.ComponentChild translateChildFromSDKToCFN(
+      ComponentChild child) {
+    software.amazon.amplifyuibuilder.component.ComponentChild.ComponentChildBuilder builder = software.amazon.amplifyuibuilder.component.ComponentChild
+        .builder()
         .componentType(child.componentType())
+        .name(child.name())
+        .sourceId(child.sourceId())
         .properties(transformMap(child.properties(), Translator::translateComponentPropertyFromSDKToCFN))
         .children(transformList(child.children(), Translator::translateChildFromSDKToCFN))
-        .events(transformMap(child.events(), Translator::translateEventFromSDKToCFN))
-        .build();
+        .events(transformMap(child.events(), Translator::translateEventFromSDKToCFN));
+
+    if (child.sourceId() == null) {
+      builder.sourceId("");
+    }
+
+    return builder.build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentEvent translateEventFromSDKToCFN(ComponentEvent v) {
+  private static software.amazon.amplifyuibuilder.component.ComponentEvent translateEventFromSDKToCFN(
+      ComponentEvent v) {
     return software.amazon.amplifyuibuilder.component.ComponentEvent.builder()
         .action(v.action())
         .parameters(transformObj(v.parameters(), Translator::translateEventParametersFromSDKToCFN))
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ActionParameters translateEventParametersFromSDKToCFN(ActionParameters parameters) {
+  private static software.amazon.amplifyuibuilder.component.ActionParameters translateEventParametersFromSDKToCFN(
+      ActionParameters parameters) {
     return software.amazon.amplifyuibuilder.component.ActionParameters.builder()
         .type(transformObj(parameters.type(), Translator::translateComponentPropertyFromSDKToCFN))
         .url(transformObj(parameters.url(), Translator::translateComponentPropertyFromSDKToCFN))
@@ -401,7 +470,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.MutationActionSetStateParameter translateMutationActionSetStateParameterFromSDKToCFN(MutationActionSetStateParameter state) {
+  private static software.amazon.amplifyuibuilder.component.MutationActionSetStateParameter translateMutationActionSetStateParameterFromSDKToCFN(
+      MutationActionSetStateParameter state) {
     return software.amazon.amplifyuibuilder.component.MutationActionSetStateParameter.builder()
         .componentName(state.componentName())
         .property(state.property())
@@ -409,7 +479,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentConditionProperty translateConditionFromSDKToCFN(ComponentConditionProperty condition) {
+  private static software.amazon.amplifyuibuilder.component.ComponentConditionProperty translateConditionFromSDKToCFN(
+      ComponentConditionProperty condition) {
     return software.amazon.amplifyuibuilder.component.ComponentConditionProperty
         .builder()
         .operator(condition.operator())
@@ -421,7 +492,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentProperty translateComponentPropertyFromSDKToCFN(ComponentProperty property) {
+  private static software.amazon.amplifyuibuilder.component.ComponentProperty translateComponentPropertyFromSDKToCFN(
+      ComponentProperty property) {
     // ComponentProperty is flattened to include properties of many types.
     return software.amazon.amplifyuibuilder.component.ComponentProperty
         .builder()
@@ -433,41 +505,50 @@ public class Translator {
         .value(property.value())
         .property(property.property())
         .componentName(property.componentName())
-        .bindingProperties(transformObj(property.bindingProperties(), Translator::translateComponentPropertyBindingPropertiesFromSDKToCFN))
+        .collectionBindingProperties(transformObj(property.collectionBindingProperties(),
+            Translator::translateComponentPropertyBindingPropertiesFromSDKToCFN))
+        .bindingProperties(transformObj(property.bindingProperties(),
+            Translator::translateComponentPropertyBindingPropertiesFromSDKToCFN))
         .condition(transformObj(property.condition(), Translator::translateConditionFromSDKToCFN))
         .bindings(transformMap(property.bindings(), Translator::translateFormBindingElementFromSDKToCFN))
         .concat(transformList(property.concat(), Translator::translateComponentPropertyFromSDKToCFN))
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentPropertyBindingProperties translateComponentPropertyBindingPropertiesFromSDKToCFN(ComponentPropertyBindingProperties bindingProperties) {
+  private static software.amazon.amplifyuibuilder.component.ComponentPropertyBindingProperties translateComponentPropertyBindingPropertiesFromSDKToCFN(
+      ComponentPropertyBindingProperties bindingProperties) {
     return software.amazon.amplifyuibuilder.component.ComponentPropertyBindingProperties.builder()
         .field(bindingProperties.field())
         .property(bindingProperties.property())
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.FormBindingElement translateFormBindingElementFromSDKToCFN(FormBindingElement v) {
+  private static software.amazon.amplifyuibuilder.component.FormBindingElement translateFormBindingElementFromSDKToCFN(
+      FormBindingElement v) {
     return software.amazon.amplifyuibuilder.component.FormBindingElement.builder()
         .element(v.element())
         .property(v.property())
         .build();
   }
 
-  private static software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue translateBindingPropertiesValueFromSDKToCFN(ComponentBindingPropertiesValue v) {
-    software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue.ComponentBindingPropertiesValueBuilder bindingPropertiesValue = software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue.builder();
+  private static software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue translateBindingPropertiesValueFromSDKToCFN(
+      ComponentBindingPropertiesValue v) {
+    software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue.ComponentBindingPropertiesValueBuilder bindingPropertiesValue = software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValue
+        .builder();
     bindingPropertiesValue.type(v.type());
     bindingPropertiesValue.defaultValue(v.defaultValue());
 
     if (v.bindingProperties() != null) {
-      software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties.ComponentBindingPropertiesValuePropertiesBuilder bindingPropertiesValueProperties = software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties.builder();
+      software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties.ComponentBindingPropertiesValuePropertiesBuilder bindingPropertiesValueProperties = software.amazon.amplifyuibuilder.component.ComponentBindingPropertiesValueProperties
+          .builder();
       bindingPropertiesValueProperties.field(v.bindingProperties().field());
       bindingPropertiesValueProperties.bucket(v.bindingProperties().bucket());
       bindingPropertiesValueProperties.userAttribute(v.bindingProperties().userAttribute());
       bindingPropertiesValueProperties.model(v.bindingProperties().model());
       bindingPropertiesValueProperties.key(v.bindingProperties().key());
       bindingPropertiesValueProperties.defaultValue(v.bindingProperties().defaultValue());
-      bindingPropertiesValueProperties.predicates(transformList(v.bindingProperties().predicates(), Translator::translatePredicateFromSDKToCFN));
+      bindingPropertiesValueProperties
+          .predicates(transformList(v.bindingProperties().predicates(), Translator::translatePredicateFromSDKToCFN));
       bindingPropertiesValue.bindingProperties(bindingPropertiesValueProperties.build());
     }
     return bindingPropertiesValue.build();

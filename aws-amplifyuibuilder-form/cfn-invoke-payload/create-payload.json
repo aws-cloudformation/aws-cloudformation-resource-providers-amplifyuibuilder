@@ -1,0 +1,58 @@
+{
+  "desiredResourceState": {
+    "AppId": "replace_with_id",
+    "EnvironmentName": "staging",
+    "FormToCreate": {
+      "Name": "TestForm",
+      "DataType": {
+        "DataSourceType": "DataStore",
+        "DataTypeName": "Post"
+      },
+      "FormActionType": "create",
+      "Fields": {},
+      "Style": {
+        "HorizontalGap": {
+          "Value": "20px"
+        },
+        "VerticalGap": {
+          "Value": "20px"
+        },
+        "OuterPadding": {
+          "Value": "20px"
+        }
+      },
+      "LabelDecorator": "required",
+      "SectionalElements": {},
+      "Cta": {
+        "Position": "bottom",
+        "Clear": {
+          "Excluded": false,
+          "Children": "Clear",
+          "Position": {
+            "Fixed": "first"
+          }
+        },
+        "Cancel": {
+          "Excluded": false,
+          "Children": "Clear",
+          "Position": {
+            "Fixed": "first"
+          }
+        },
+        "Submit": {
+          "Excluded": false,
+          "Children": "Clear",
+          "Position": {
+            "Fixed": "first"
+          }
+        }
+      },
+      "SchemaVersion": "1.0",
+      "Tags": {
+        "purpose": "UluruContractTest"
+      }
+    }
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "MyComponentResource"
+}

@@ -1,0 +1,22 @@
+{
+  "desiredResourceState": {
+    "AppId": "replace_with_real_app_id",
+    "EnvironmentName": "staging",
+    "Id": "replace_with_real_component_id",
+    "UpdatedComponent": {
+      "componentType": "Button",
+      "name": "CustomButton",
+      "Id": "replace_with_real_component_id",
+      "properties": {
+        "children": {
+          "value": "updated button"
+        }
+      },
+      "bindingProperties": {},
+      "overrides": {},
+      "variants": []
+    }
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "MyResource"
+}

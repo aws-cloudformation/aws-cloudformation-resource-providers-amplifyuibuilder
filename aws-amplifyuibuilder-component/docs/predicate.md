@@ -12,7 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#and" title="And">And</a>" : <i>[ <a href="predicate.md">Predicate</a>, ... ]</i>,
     "<a href="#field" title="Field">Field</a>" : <i>String</i>,
     "<a href="#operator" title="Operator">Operator</a>" : <i>String</i>,
-    "<a href="#operand" title="Operand">Operand</a>" : <i>String</i>
+    "<a href="#operand" title="Operand">Operand</a>" : <i>String</i>,
+    "<a href="#operandtype" title="OperandType">OperandType</a>" : <i>String</i>
 }
 </pre>
 
@@ -26,6 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#field" title="Field">Field</a>: <i>String</i>
 <a href="#operator" title="Operator">Operator</a>: <i>String</i>
 <a href="#operand" title="Operand">Operand</a>: <i>String</i>
+<a href="#operandtype" title="OperandType">OperandType</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -69,3 +71,14 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OperandType
+
+_Required_: No
+
+_Type_: String
+
+_Pattern_: <code>^boolean|string|number$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+

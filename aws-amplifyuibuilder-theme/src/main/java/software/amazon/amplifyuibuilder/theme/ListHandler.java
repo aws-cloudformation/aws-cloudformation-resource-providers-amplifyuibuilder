@@ -8,21 +8,25 @@ import software.amazon.cloudformation.proxy.*;
 
 public class ListHandler extends BaseHandlerStd {
 
-  protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+  public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
       final AmazonWebServicesClientProxy proxy,
       final ResourceHandlerRequest<ResourceModel> request,
       final CallbackContext callbackContext,
       final ProxyClient<AmplifyUiBuilderClient> proxyClient,
       final Logger logger) {
-    final ListThemesRequest listRequest = Translator.translateToListRequest(request.getNextToken(), request.getDesiredResourceState());
+    final ListThemesRequest listRequest = Translator.translateToListRequest(request.getNextToken(),
+        request.getDesiredResourceState());
+    logger.log("translateToListRequest succeeded");
 
-    final ListThemesResponse response = (ListThemesResponse) ClientWrapper.execute(
+    ListThemesResponse response = (ListThemesResponse) ClientWrapper.execute(
         proxy,
         listRequest,
         proxyClient.client()::listThemes,
         ResourceModel.TYPE_NAME,
-        logger
-    );
+        logger);
+
+    logger.log("getThemes request succeeded for appId: " + listRequest.appId() + " envName: "
+        + listRequest.environmentName());
 
     return ProgressEvent.<ResourceModel, CallbackContext>builder()
         .resourceModels(Translator.translateFromListRequest(response))

@@ -35,6 +35,8 @@ Resources:
                 - "amplifyuibuilder:DeleteTheme"
                 - "amplifyuibuilder:GetTheme"
                 - "amplifyuibuilder:ListThemes"
+                - "amplifyuibuilder:TagResource"
+                - "amplifyuibuilder:UntagResource"
                 - "amplifyuibuilder:UpdateTheme"
                 Resource: "*"
 Outputs:

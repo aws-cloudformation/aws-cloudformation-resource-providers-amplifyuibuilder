@@ -15,6 +15,7 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.time.Duration;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,12 +37,10 @@ public class ReadHandlerTest extends AbstractTestBase {
 
   @BeforeEach
   public void setup() {
-    proxy =
-        new AmazonWebServicesClientProxy(
-            logger,
-            MOCK_CREDENTIALS,
-            () -> Duration.ofSeconds(600).toMillis()
-        );
+    proxy = new AmazonWebServicesClientProxy(
+        logger,
+        MOCK_CREDENTIALS,
+        () -> Duration.ofSeconds(600).toMillis());
     sdkClient = mock(AmplifyUiBuilderClient.class);
     proxyClient = MOCK_PROXY(proxy, sdkClient);
   }
@@ -69,12 +68,12 @@ public class ReadHandlerTest extends AbstractTestBase {
                 .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
                 .bindingProperties(transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
                 .overrides(OVERRIDES)
+                .events(new HashMap<>())
                 .properties(transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
                 .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
                 .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
                 .tags(TAGS)
-                .build()
-        )
+                .build())
         .build();
 
     when(proxyClient.client().getComponent(any(GetComponentRequest.class)))
@@ -86,6 +85,8 @@ public class ReadHandlerTest extends AbstractTestBase {
         .appId(APP_ID)
         .environmentName(ENV_NAME)
         .name(NAME)
+        .children(CHILDREN_CFN)
+        .properties(PROPERTIES_CFN)
         .build();
 
     final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
@@ -98,14 +99,15 @@ public class ReadHandlerTest extends AbstractTestBase {
         request,
         new CallbackContext(),
         proxyClient,
-        logger
-    );
+        logger);
 
     ResourceModel responseResourceModel = response.getResourceModel();
     ResourceModel requestDesiredResourceState = request.getDesiredResourceState();
     assertThat(responseResourceModel.getAppId()).isEqualTo(requestDesiredResourceState.getAppId());
+    assertThat(responseResourceModel.getChildren()).isEqualTo(requestDesiredResourceState.getChildren());
     assertThat(responseResourceModel.getEnvironmentName()).isEqualTo(requestDesiredResourceState.getEnvironmentName());
     assertThat(responseResourceModel.getId()).isEqualTo(requestDesiredResourceState.getId());
     assertThat(responseResourceModel.getName()).isEqualTo(requestDesiredResourceState.getName());
+    assertThat(responseResourceModel.getSourceId()).isEqualTo(null);
   }
 }

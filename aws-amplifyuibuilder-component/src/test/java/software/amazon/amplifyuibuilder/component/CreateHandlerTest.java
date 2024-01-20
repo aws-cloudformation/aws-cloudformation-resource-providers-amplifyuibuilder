@@ -16,6 +16,7 @@ import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.*;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,12 +71,15 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
                 .bindingProperties(transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
                 .overrides(OVERRIDES)
+                .createdAt(Instant.now())
+                .modifiedAt(Instant.now())
                 .properties(transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
                 .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
                 .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
                 .events(transformMap(EVENTS_CFN, Translator::translateEventFromCFNToSDK))
                 .schemaVersion(SCHEMA_VERSION)
                 .tags(TAGS)
+                .sourceId("123456")
                 .build()
         )
         .build();
@@ -116,6 +120,7 @@ public class CreateHandlerTest extends AbstractTestBase {
         .collectionProperties(COLLECTION_PROPERTIES_CFN)
         .events(EVENTS_CFN)
         .schemaVersion(SCHEMA_VERSION)
+        .sourceId("123456")
         .build();
 
     CallbackContext context = new CallbackContext();
@@ -135,6 +140,7 @@ public class CreateHandlerTest extends AbstractTestBase {
     ResourceModel component = response.getResourceModel();
 
     assertThat(response).isNotNull();
+
     assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
     assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
     assertThat(response.getResourceModels()).isNull();
@@ -148,6 +154,7 @@ public class CreateHandlerTest extends AbstractTestBase {
     assertThat(component.getOverrides()).isEqualTo(model.getOverrides());
     assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
     assertThat(component.getTags()).isEqualTo(model.getTags());
+    assertThat(component.getSourceId()).isEqualTo(model.getSourceId());
     assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
     assertThat(component.getEvents().keySet()).isEqualTo(model.getEvents().keySet());
     assertThat(component.getSchemaVersion()).isEqualTo(model.getSchemaVersion());

@@ -7,7 +7,6 @@ import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.proxy.*;
 
 public class UpdateHandler extends BaseHandlerStd {
-  private Logger logger;
 
   protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
       final AmazonWebServicesClientProxy proxy,
@@ -16,7 +15,6 @@ public class UpdateHandler extends BaseHandlerStd {
       final ProxyClient<AmplifyUiBuilderClient> proxyClient,
       final Logger logger) {
 
-    this.logger = logger;
     ResourceModel model = request.getDesiredResourceState();
 
     // To pass contract test: contract_update_without_create
@@ -25,18 +23,17 @@ public class UpdateHandler extends BaseHandlerStd {
     }
 
     return ProgressEvent.progress(model, callbackContext)
-        .then(progress ->
-            proxy.initiate("AWS-AmplifyUIBuilder-Theme::Update", proxyClient, model, progress.getCallbackContext())
-                .translateToServiceRequest(Translator::translateToUpdateRequest)
-                .makeServiceCall((updateThemeRequest, proxyInvocation) -> (UpdateThemeResponse) ClientWrapper.execute(
-                    proxy,
-                    updateThemeRequest,
-                    proxyInvocation.client()::updateTheme,
-                    ResourceModel.TYPE_NAME,
-                    model.getId(),
-                    logger
-                ))
-                .progress())
+        .then(progress -> proxy
+            .initiate("AWS-AmplifyUIBuilder-Theme::Update", proxyClient, model, progress.getCallbackContext())
+            .translateToServiceRequest(Translator::translateToUpdateRequest)
+            .makeServiceCall((updateThemeRequest, proxyInvocation) -> (UpdateThemeResponse) ClientWrapper.execute(
+                proxy,
+                updateThemeRequest,
+                proxyInvocation.client()::updateTheme,
+                ResourceModel.TYPE_NAME,
+                model.getId(),
+                logger))
+            .progress())
         .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
   }
 }

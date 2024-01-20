@@ -53,7 +53,7 @@ Properties:
 
 #### BindingProperties
 
-_Required_: Yes
+_Required_: No
 
 _Type_: <a href="bindingproperties.md">BindingProperties</a>
 
@@ -77,13 +77,13 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ComponentType
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>255</code>
+_Maximum Length_: <code>255</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -97,19 +97,19 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Name
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>255</code>
+_Maximum Length_: <code>255</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Overrides
 
-_Required_: Yes
+_Required_: No
 
 _Type_: <a href="overrides.md">Overrides</a>
 
@@ -117,7 +117,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Properties
 
-_Required_: Yes
+_Required_: No
 
 _Type_: <a href="componentchild-properties.md">Properties</a>
 
@@ -145,11 +145,11 @@ _Required_: No
 
 _Type_: <a href="tags.md">Tags</a>
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Variants
 
-_Required_: Yes
+_Required_: No
 
 _Type_: List of <a href="componentvariant.md">ComponentVariant</a>
 
@@ -167,6 +167,10 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Returns the <code>AppId</code> value.
 
+#### CreatedAt
+
+Returns the <code>CreatedAt</code> value.
+
 #### EnvironmentName
 
 Returns the <code>EnvironmentName</code> value.
@@ -174,3 +178,8 @@ Returns the <code>EnvironmentName</code> value.
 #### Id
 
 Returns the <code>Id</code> value.
+
+#### ModifiedAt
+
+Returns the <code>ModifiedAt</code> value.
+

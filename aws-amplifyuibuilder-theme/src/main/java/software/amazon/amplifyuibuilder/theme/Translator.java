@@ -3,7 +3,9 @@ package software.amazon.amplifyuibuilder.theme;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +28,11 @@ public class Translator {
    * @param model resource model
    * @return awsRequest the aws service request to create a resource
    */
-  static CreateThemeRequest translateToCreateRequest(final ResourceModel model) {
+  static CreateThemeRequest translateToCreateRequest(final ResourceModel model,
+      final Map<String, String> desiredResourceTags,
+      final String requestToken) {
+    Map<String, String> tagsToCreate = getTagsToCreate(model, desiredResourceTags);
+
     return CreateThemeRequest.builder()
         .appId(model.getAppId())
         .environmentName(model.getEnvironmentName())
@@ -34,10 +40,21 @@ public class Translator {
             .name(model.getName())
             .values(transformList(model.getValues(), Translator::translateThemeValuesFromCFNToSDK))
             .overrides(transformList(model.getOverrides(), Translator::translateThemeValuesFromCFNToSDK))
-            .tags(model.getTags())
-            .build()
-        )
+            .tags(tagsToCreate.isEmpty() ? null : tagsToCreate)
+            .build())
         .build();
+  }
+
+  private static Map<String, String> getTagsToCreate(final ResourceModel model,
+      final Map<String, String> desiredResourceTags) {
+    Map<String, String> tagsToCreate = new HashMap<>();
+    if (desiredResourceTags != null && !desiredResourceTags.isEmpty()) {
+      tagsToCreate.putAll(desiredResourceTags);
+    }
+    if (model.getTags() != null && !model.getTags().isEmpty()) {
+      tagsToCreate.putAll(model.getTags());
+    }
+    return tagsToCreate;
   }
 
   /**
@@ -67,9 +84,9 @@ public class Translator {
         .id(theme.id())
         .environmentName(theme.environmentName())
         .appId(theme.appId())
+        .name(theme.name())
         .createdAt(theme.createdAt().toString())
         .modifiedAt(theme.modifiedAt().toString())
-        .name(theme.name())
         .overrides(transformList(theme.overrides(), Translator::translateThemeValuesFromSDKToCFN))
         .values(transformList(theme.values(), Translator::translateThemeValuesFromSDKToCFN))
         .tags(theme.tags())
@@ -115,7 +132,8 @@ public class Translator {
    * Request to list resources
    *
    * @param nextToken token passed to the aws service list resources request
-   * @return awsRequest the aws service request to list resources within aws account
+   * @return awsRequest the aws service request to list resources within aws
+   *         account
    */
   static ListThemesRequest translateToListRequest(final String nextToken, final ResourceModel model) {
     return ListThemesRequest.builder()
@@ -127,7 +145,8 @@ public class Translator {
   }
 
   /**
-   * Translates resource objects from sdk into a resource model (primary identifier only)
+   * Translates resource objects from sdk into a resource model (primary
+   * identifier only)
    *
    * @param response the aws service describe resource response
    * @return list of resource models
@@ -148,14 +167,16 @@ public class Translator {
         .orElseGet(Stream::empty);
   }
 
-  private static ThemeValue translateThemeValueFromSDKToCFN(software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue value) {
+  private static ThemeValue translateThemeValueFromSDKToCFN(
+      software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue value) {
     return ThemeValue.builder()
         .value(value.value())
         .children(transformList(value.children(), Translator::translateThemeValuesFromSDKToCFN))
         .build();
   }
 
-  private static ThemeValues translateThemeValuesFromSDKToCFN(software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues themeValues) {
+  private static ThemeValues translateThemeValuesFromSDKToCFN(
+      software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues themeValues) {
     return ThemeValues
         .builder()
         .key(themeValues.key())
@@ -163,7 +184,8 @@ public class Translator {
         .build();
   }
 
-  public static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues translateThemeValuesFromCFNToSDK(ThemeValues themeValues) {
+  public static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues translateThemeValuesFromCFNToSDK(
+      ThemeValues themeValues) {
     return software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValues
         .builder()
         .key(themeValues.getKey())
@@ -171,7 +193,8 @@ public class Translator {
         .build();
   }
 
-  private static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue translateThemeValueFromCFNToSDK(ThemeValue value) {
+  private static software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue translateThemeValueFromCFNToSDK(
+      ThemeValue value) {
     return software.amazon.awssdk.services.amplifyuibuilder.model.ThemeValue
         .builder()
         .value(value.getValue())

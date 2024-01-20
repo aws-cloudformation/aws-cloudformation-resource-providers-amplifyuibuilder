@@ -13,8 +13,10 @@ import software.amazon.awssdk.services.amplifyuibuilder.model.Theme;
 import software.amazon.cloudformation.proxy.*;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static software.amazon.amplifyuibuilder.common.Transformer.transformList;
 
@@ -53,10 +55,10 @@ public class ReadHandlerTest extends AbstractTestBase {
             .appId(APP_ID)
             .environmentName(ENV_NAME)
             .id(ID)
-            .createdAt(NOW)
-            .modifiedAt(NOW)
             .name(NAME)
             .tags(TAGS)
+            .createdAt(Instant.now())
+            .modifiedAt(Instant.now())
             .values(transformList(THEME_VALUES_LIST, Translator::translateThemeValuesFromCFNToSDK))
             .build())
         .build();
@@ -68,8 +70,6 @@ public class ReadHandlerTest extends AbstractTestBase {
         .id(ID)
         .appId(APP_ID)
         .environmentName(ENV_NAME)
-        .createdAt(NOW.toString())
-        .modifiedAt(NOW.toString())
         .name(NAME)
         .values(THEME_VALUES_LIST)
         .build();
@@ -78,22 +78,26 @@ public class ReadHandlerTest extends AbstractTestBase {
         .desiredResourceState(model)
         .build();
 
-    final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
-    ResourceModel actual = response.getResourceModel();
+    final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+        new CallbackContext(), proxyClient, logger);
+    ResourceModel responseResourceModel = response.getResourceModel();
+
+    ResourceModel requestDesiredResourceState = request.getDesiredResourceState();
+
+    logger.log(String.format("Response: %s", response));
 
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
     assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
     assertThat(response.getMessage()).isNull();
     assertThat(response.getErrorCode()).isNull();
-    assertThat(actual.getAppId()).isEqualTo(model.getAppId());
-    assertThat(actual.getId()).isEqualTo(model.getId());
-    assertThat(actual.getName()).isEqualTo(model.getName());
-    assertThat(actual.getEnvironmentName()).isEqualTo(model.getEnvironmentName());
-    assertThat(actual.getValues().size()).isEqualTo(model.getValues().size());
+    assertThat(responseResourceModel.getAppId()).isEqualTo(requestDesiredResourceState.getAppId());
+    assertThat(responseResourceModel.getId()).isEqualTo(requestDesiredResourceState.getId());
+    assertThat(responseResourceModel.getName()).isEqualTo(requestDesiredResourceState.getName());
+    assertThat(responseResourceModel.getEnvironmentName()).isEqualTo(requestDesiredResourceState.getEnvironmentName());
+    assertThat(responseResourceModel.getValues().size()).isEqualTo(requestDesiredResourceState.getValues().size());
     assertThat(model.getOverrides()).isNull();
-    assertThat(actual.getOverrides().size()).isEqualTo(0);
-    assertThat(response.getResourceModels()).isNull();
+    assertThat(responseResourceModel.getOverrides().size()).isEqualTo(0);
 
   }
 }

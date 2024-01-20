@@ -1,0 +1,119 @@
+{
+  "desiredResourceState": {
+    "AppId": "replace_with_id",
+    "EnvironmentName": "staging",
+    "ComponentToCreate": {
+      "Name": "CondTestButton",
+      "ComponentType": "Button",
+      "SourceId": "12345",
+      "BindingProperties": {
+        "width": {
+          "type": "Number"
+        },
+        "buttonColor": {
+          "type": "String"
+        },
+        "buttonUser": {
+          "type": "Data",
+          "bindingProperties": {
+            "model": "User"
+          }
+        }
+      },
+      "Properties": {
+        "disabled": {
+          "condition": {
+            "property": "buttonUser",
+            "field": "isLoggedIn",
+            "operator": "eq",
+            "operand": "true",
+            "operandType": "boolean",
+            "then": {
+              "value": "true"
+            },
+            "else": {
+              "value": "false"
+            }
+          }
+        },
+        "prompt": {
+          "condition": {
+            "property": "buttonUser",
+            "field": "age",
+            "operator": "gt",
+            "operand": "18",
+            "operandType": "boolean",
+            "then": {
+              "concat": [
+                {
+                  "bindingProperties": {
+                    "property": "buttonUser",
+                    "field": "firstname"
+                  },
+                  "defaultValue": "Harrison"
+                },
+                {
+                  "value": ", cast your vote."
+                }
+              ]
+            },
+            "else": {
+              "value": "Sorry you cannot vote"
+            }
+          }
+        },
+        "backgroundColor": {
+          "condition": {
+            "property": "buttonUser",
+            "field": "isLoggedIn",
+            "operator": "eq",
+            "operand": "true",
+            "operandType": "boolean",
+            "then": {
+              "bindingProperties": {
+                "property": "buttonUser",
+                "field": "loggedInColor"
+              }
+            },
+            "else": {
+              "bindingProperties": {
+                "property": "buttonUser",
+                "field": "loggedOutColor"
+              }
+            }
+          }
+        },
+        "label": {
+          "concat": [
+            {
+              "bindingProperties": {
+                "property": "buttonUser",
+                "field": "firstname"
+              },
+              "defaultValue": "Harrison"
+            },
+            {
+              "value": " "
+            },
+            {
+              "bindingProperties": {
+                "property": "buttonUser",
+                "field": "lastname"
+              },
+              "defaultValue": "Spain"
+            }
+          ]
+        },
+        "labelWidth": {
+          "bindingProperties": {
+            "property": "width"
+          }
+        }
+      },
+      "Overrides": {},
+      "Variants": []
+    }
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "MyComponentResource"
+}

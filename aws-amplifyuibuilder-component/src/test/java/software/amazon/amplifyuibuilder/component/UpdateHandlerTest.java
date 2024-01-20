@@ -14,6 +14,7 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +70,8 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
                 .bindingProperties(transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
                 .overrides(OVERRIDES)
+                .createdAt(Instant.now())
+                .modifiedAt(Instant.now())
                 .properties(transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
                 .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
                 .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))

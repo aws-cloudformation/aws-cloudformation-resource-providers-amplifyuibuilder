@@ -30,12 +30,14 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "amplify:GetApp"
-                  - "amplifyuibuilder:CreateComponent"
-                  - "amplifyuibuilder:DeleteComponent"
-                  - "amplifyuibuilder:GetComponent"
-                  - "amplifyuibuilder:ListComponents"
-                  - "amplifyuibuilder:UpdateComponent"
+                - "amplify:GetApp"
+                - "amplifyuibuilder:CreateComponent"
+                - "amplifyuibuilder:DeleteComponent"
+                - "amplifyuibuilder:GetComponent"
+                - "amplifyuibuilder:ListComponents"
+                - "amplifyuibuilder:TagResource"
+                - "amplifyuibuilder:UntagResource"
+                - "amplifyuibuilder:UpdateComponent"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

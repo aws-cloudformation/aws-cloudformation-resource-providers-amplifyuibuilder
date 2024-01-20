@@ -8,42 +8,38 @@ import software.amazon.cloudformation.proxy.*;
 
 public class ListHandler extends BaseHandlerStd {
 
-  private Logger logger;
+    @Override
+    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final CallbackContext callbackContext,
+            final ProxyClient<AmplifyUiBuilderClient> proxyClient,
+            final Logger logger) {
 
-  @Override
-  public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-      final AmazonWebServicesClientProxy proxy,
-      final ResourceHandlerRequest<ResourceModel> request,
-      final CallbackContext callbackContext,
-      final ProxyClient<AmplifyUiBuilderClient> proxyClient,
-      final Logger logger
-  ) {
-    this.logger = logger;
-    // Construct a body of a request
-    final ListComponentsRequest listRequest = Translator.translateToListRequest(
-        request.getNextToken(),
-        request.getDesiredResourceState()
-    );
-    logger.log("translateToListRequest succeeded");
+        // Construct a body of a request
+        final ListComponentsRequest listRequest = Translator.translateToListRequest(
+                request.getNextToken(),
+                request.getDesiredResourceState());
+        logger.log("translateToListRequest succeeded");
 
-    // Make getComponents api call
-    ListComponentsResponse listComponentsResponse = (ListComponentsResponse) ClientWrapper.execute(
-        proxy,
-        listRequest,
-        proxyClient.client()::listComponents,
-        ResourceModel.TYPE_NAME,
-        logger
-    );
+        // Make getComponents api call
+        ListComponentsResponse listComponentsResponse = (ListComponentsResponse) ClientWrapper.execute(
+                proxy,
+                listRequest,
+                proxyClient.client()::listComponents,
+                ResourceModel.TYPE_NAME,
+                logger);
 
-    logger.log("getComponents request succeeded for appId: " + listRequest.appId() + " envName: " + listRequest.environmentName());
-    // Get a token for the next page
-    String nextToken = listComponentsResponse.nextToken();
+        logger.log("getComponents request succeeded for appId: " + listRequest.appId() + " envName: "
+                + listRequest.environmentName());
+        // Get a token for the next page
+        String nextToken = listComponentsResponse.nextToken();
 
-    return ProgressEvent
-        .<ResourceModel, CallbackContext>builder()
-        .resourceModels(Translator.translateFromListRequest(listComponentsResponse))
-        .nextToken(nextToken)
-        .status(OperationStatus.SUCCESS)
-        .build();
-  }
+        return ProgressEvent
+                .<ResourceModel, CallbackContext>builder()
+                .resourceModels(Translator.translateFromListRequest(listComponentsResponse))
+                .nextToken(nextToken)
+                .status(OperationStatus.SUCCESS)
+                .build();
+    }
 }
