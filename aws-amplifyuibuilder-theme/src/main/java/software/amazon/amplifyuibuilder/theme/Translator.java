@@ -48,9 +48,7 @@ public class Translator {
   private static Map<String, String> getTagsToCreate(final ResourceModel model,
       final Map<String, String> desiredResourceTags) {
     Map<String, String> tagsToCreate = new HashMap<>();
-    if (desiredResourceTags != null && !desiredResourceTags.isEmpty()) {
-      tagsToCreate.putAll(desiredResourceTags);
-    }
+
     if (model.getTags() != null && !model.getTags().isEmpty()) {
       tagsToCreate.putAll(model.getTags());
     }

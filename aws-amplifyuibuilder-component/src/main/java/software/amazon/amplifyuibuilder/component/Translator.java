@@ -77,9 +77,7 @@ public class Translator {
   private static Map<String, String> getTagsToCreate(final ResourceModel model,
       final Map<String, String> desiredResourceTags) {
     Map<String, String> tagsToCreate = new HashMap<>();
-    if (desiredResourceTags != null && !desiredResourceTags.isEmpty()) {
-      tagsToCreate.putAll(desiredResourceTags);
-    }
+
     if (model.getTags() != null && !model.getTags().isEmpty()) {
       tagsToCreate.putAll(model.getTags());
     }
@@ -439,10 +437,6 @@ public class Translator {
         .properties(transformMap(child.properties(), Translator::translateComponentPropertyFromSDKToCFN))
         .children(transformList(child.children(), Translator::translateChildFromSDKToCFN))
         .events(transformMap(child.events(), Translator::translateEventFromSDKToCFN));
-
-    if (child.sourceId() == null) {
-      builder.sourceId("");
-    }
 
     return builder.build();
   }

@@ -62,9 +62,7 @@ public class Translator {
   static CreateFormRequest translateToCreateRequest(final ResourceModel model,
       final Map<String, String> desiredResourceTags) {
     Map<String, String> tagsToCreate = new HashMap<>();
-    if (desiredResourceTags != null && !desiredResourceTags.isEmpty()) {
-      tagsToCreate.putAll(desiredResourceTags);
-    }
+
     if (model.getTags() != null && !model.getTags().isEmpty()) {
       tagsToCreate.putAll(model.getTags());
     }
@@ -81,7 +79,6 @@ public class Translator {
             .cta(transformObj(model.getCta(), Translator::mapCtaCFNToSDK))
             .schemaVersion(model.getSchemaVersion())
             .labelDecorator(model.getLabelDecorator())
-            .tags(tagsToCreate.isEmpty() ? null : tagsToCreate)
             .build())
         .build();
   }
