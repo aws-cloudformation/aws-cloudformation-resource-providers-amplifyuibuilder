@@ -5,10 +5,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>software.amazon.amplifyuibuilder</groupId>
-    <artifactId>common</artifactId>
+    <groupId>software.amazon.amplifyuibuilder.common</groupId>
+    <artifactId>aws-amplifyuibuilder-common</artifactId>
     <name>aws-amplifyuibuilder-common</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -24,7 +24,7 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.17.146</version>
+                <version>2.17.201</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.4</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>amplifyuibuilder</artifactId>
-            <version>2.17.146</version>
+            <version>2.20.81</version>
         </dependency>
     </dependencies>
 

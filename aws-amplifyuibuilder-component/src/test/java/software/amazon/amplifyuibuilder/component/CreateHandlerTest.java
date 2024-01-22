@@ -21,175 +21,172 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import lombok.Getter;
 import static software.amazon.amplifyuibuilder.common.Transformer.transformList;
 import static software.amazon.amplifyuibuilder.common.Transformer.transformMap;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest extends AbstractTestBase {
 
-  @Mock
-  private AmazonWebServicesClientProxy proxy;
+    @Mock
+    @Getter
+    private AmazonWebServicesClientProxy proxy;
 
-  @Mock
-  private ProxyClient<AmplifyUiBuilderClient> proxyClient;
+    @Mock
+    @Getter
+    private ProxyClient<AmplifyUiBuilderClient> proxyClient;
 
-  @Mock
-  AmplifyUiBuilderClient sdkClient;
+    @Mock
+    AmplifyUiBuilderClient sdkClient;
 
-  @BeforeEach
-  public void setup() {
-    proxy =
-        new AmazonWebServicesClientProxy(
-            logger,
-            MOCK_CREDENTIALS,
-            () -> Duration.ofSeconds(600).toMillis()
-        );
-    sdkClient = mock(AmplifyUiBuilderClient.class);
-    proxyClient = MOCK_PROXY(proxy, sdkClient);
-  }
+    @BeforeEach
+    public void setup() {
+        proxy = new AmazonWebServicesClientProxy(
+                logger,
+                MOCK_CREDENTIALS,
+                () -> Duration.ofSeconds(600).toMillis());
+        sdkClient = mock(AmplifyUiBuilderClient.class);
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
+    }
 
-  @AfterEach
-  public void tear_down() {
-    verify(sdkClient, atLeastOnce()).serviceName();
-    verifyNoMoreInteractions(sdkClient);
-  }
+    @AfterEach
+    public void tear_down() {
+        verify(sdkClient, atLeastOnce()).serviceName();
+        verifyNoMoreInteractions(sdkClient);
+    }
 
-  @Test
-  public void handleRequest_SimpleSuccess() {
-    final CreateHandler handler = new CreateHandler();
+    @Test
+    public void handleRequest_SimpleSuccess() {
+        final CreateHandler handler = new CreateHandler();
 
-    final GetComponentResponse getResponse = GetComponentResponse
-        .builder()
-        .component(
-            software.amazon.awssdk.services.amplifyuibuilder.model.Component
+        final GetComponentResponse getResponse = GetComponentResponse
                 .builder()
-                .name(NAME)
-                .id(ID)
-                .appId(APP_ID)
+                .component(
+                        software.amazon.awssdk.services.amplifyuibuilder.model.Component
+                                .builder()
+                                .name(NAME)
+                                .id(ID)
+                                .appId(APP_ID)
+                                .environmentName(ENV_NAME)
+                                .componentType(TYPE)
+                                .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
+                                .bindingProperties(transformMap(BINDING_PROPERTIES_CFN,
+                                        Translator::translateBindingPropertyFromCFNToSDK))
+                                .overrides(OVERRIDES)
+                                .createdAt(Instant.now())
+                                .modifiedAt(Instant.now())
+                                .properties(transformMap(PROPERTIES_CFN,
+                                        Translator::translateComponentPropertyFromCFNToSDK))
+                                .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN,
+                                        Translator::translateCollectionPropertyFromCFNToSDK))
+                                .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
+                                .events(transformMap(EVENTS_CFN, Translator::translateEventFromCFNToSDK))
+                                .schemaVersion(SCHEMA_VERSION)
+                                .tags(TAGS)
+                                .sourceId("123456")
+                                .build())
+                .build();
+
+        when(proxyClient.client().getComponent(any(GetComponentRequest.class)))
+                .thenReturn(getResponse);
+
+        final CreateComponentResponse createResponse = CreateComponentResponse
+                .builder()
+                .entity(
+                        (software.amazon.awssdk.services.amplifyuibuilder.model.Component
+                                .builder()
+                                // Use this returned ID to pass to read handler after component is created
+                                .id(ID)
+                                .build()))
+                .build();
+
+        when(
+                proxyClient.client().createComponent(any(CreateComponentRequest.class)))
+                .thenReturn(createResponse);
+
+        final ResourceModel model = ResourceModel
+                .builder()
                 .environmentName(ENV_NAME)
+                .appId(APP_ID)
+                .name(NAME)
                 .componentType(TYPE)
-                .variants(transformList(VARIANT_CFN, Translator::translateVariantFromCFNToSDK))
-                .bindingProperties(transformMap(BINDING_PROPERTIES_CFN, Translator::translateBindingPropertyFromCFNToSDK))
+                .variants(VARIANT_CFN)
+                .bindingProperties(BINDING_PROPERTIES_CFN)
                 .overrides(OVERRIDES)
-                .createdAt(Instant.now())
-                .modifiedAt(Instant.now())
-                .properties(transformMap(PROPERTIES_CFN, Translator::translateComponentPropertyFromCFNToSDK))
-                .collectionProperties(transformMap(COLLECTION_PROPERTIES_CFN, Translator::translateCollectionPropertyFromCFNToSDK))
-                .children(transformList(CHILDREN_CFN, Translator::translateChildComponentFromCFNToSDK))
-                .events(transformMap(EVENTS_CFN, Translator::translateEventFromCFNToSDK))
-                .schemaVersion(SCHEMA_VERSION)
+                .properties(PROPERTIES_CFN)
                 .tags(TAGS)
+                .children(CHILDREN_CFN)
+                .collectionProperties(COLLECTION_PROPERTIES_CFN)
+                .events(EVENTS_CFN)
+                .schemaVersion(SCHEMA_VERSION)
                 .sourceId("123456")
-                .build()
-        )
-        .build();
+                .build();
 
-    when(proxyClient.client().getComponent(any(GetComponentRequest.class)))
-        .thenReturn(getResponse);
+        CallbackContext context = new CallbackContext();
 
-    final CreateComponentResponse createResponse = CreateComponentResponse
-        .builder()
-        .entity(
-            (
-                software.amazon.awssdk.services.amplifyuibuilder.model.Component
-                    .builder()
-                    // Use this returned ID to pass to read handler after component is created
-                    .id(ID)
-                    .build()
-            )
-        )
-        .build();
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
+                .<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
 
-    when(
-        proxyClient.client().createComponent(any(CreateComponentRequest.class))
-    )
-        .thenReturn(createResponse);
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(
+                proxy,
+                request,
+                context,
+                proxyClient,
+                logger);
+        ResourceModel component = response.getResourceModel();
 
-    final ResourceModel model = ResourceModel
-        .builder()
-        .environmentName(ENV_NAME)
-        .appId(APP_ID)
-        .name(NAME)
-        .componentType(TYPE)
-        .variants(VARIANT_CFN)
-        .bindingProperties(BINDING_PROPERTIES_CFN)
-        .overrides(OVERRIDES)
-        .properties(PROPERTIES_CFN)
-        .tags(TAGS)
-        .children(CHILDREN_CFN)
-        .collectionProperties(COLLECTION_PROPERTIES_CFN)
-        .events(EVENTS_CFN)
-        .schemaVersion(SCHEMA_VERSION)
-        .sourceId("123456")
-        .build();
+        assertThat(response).isNotNull();
 
-    CallbackContext context = new CallbackContext();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
 
-    final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
-        .<ResourceModel>builder()
-        .desiredResourceState(model)
-        .build();
+        assertThat(component.getChildren().size()).isEqualTo(model.getChildren().size());
+        assertThat(component.getProperties().keySet()).isEqualTo(model.getProperties().keySet());
+        assertThat(component.getVariants().size()).isEqualTo(model.getVariants().size());
+        assertThat(component.getBindingProperties().keySet()).isEqualTo(model.getBindingProperties().keySet());
+        assertThat(component.getOverrides()).isEqualTo(model.getOverrides());
+        assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
+        assertThat(component.getTags()).isEqualTo(model.getTags());
+        assertThat(component.getSourceId()).isEqualTo(model.getSourceId());
+        assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
+        assertThat(component.getEvents().keySet()).isEqualTo(model.getEvents().keySet());
+        assertThat(component.getSchemaVersion()).isEqualTo(model.getSchemaVersion());
+    }
 
-    final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(
-        proxy,
-        request,
-        context,
-        proxyClient,
-        logger
-    );
-    ResourceModel component = response.getResourceModel();
+    // Tests resource model with null properties
+    @Test
+    public void handleRequest_NullProperties() {
+        final CreateHandler handler = new CreateHandler();
 
-    assertThat(response).isNotNull();
+        when(proxyClient.client().createComponent(any(CreateComponentRequest.class)))
+                .thenThrow(new CfnInvalidRequestException("Invalid parameters"));
 
-    assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-    assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-    assertThat(response.getResourceModels()).isNull();
-    assertThat(response.getMessage()).isNull();
-    assertThat(response.getErrorCode()).isNull();
+        final ResourceModel model = ResourceModel
+                .builder()
+                .environmentName(ENV_NAME)
+                .appId(APP_ID)
+                .name(NAME)
+                .componentType(TYPE)
+                .tags(TAGS)
+                .build();
 
-    assertThat(component.getChildren().size()).isEqualTo(model.getChildren().size());
-    assertThat(component.getProperties().keySet()).isEqualTo(model.getProperties().keySet());
-    assertThat(component.getVariants().size()).isEqualTo(model.getVariants().size());
-    assertThat(component.getBindingProperties().keySet()).isEqualTo(model.getBindingProperties().keySet());
-    assertThat(component.getOverrides()).isEqualTo(model.getOverrides());
-    assertThat(component.getCollectionProperties().keySet()).isEqualTo(model.getCollectionProperties().keySet());
-    assertThat(component.getTags()).isEqualTo(model.getTags());
-    assertThat(component.getSourceId()).isEqualTo(model.getSourceId());
-    assertThat(component.getComponentType()).isEqualTo(model.getComponentType());
-    assertThat(component.getEvents().keySet()).isEqualTo(model.getEvents().keySet());
-    assertThat(component.getSchemaVersion()).isEqualTo(model.getSchemaVersion());
-  }
+        CallbackContext context = new CallbackContext();
 
-  // Tests resource model with null properties
-  @Test
-  public void handleRequest_NullProperties() {
-    final CreateHandler handler = new CreateHandler();
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
+                .<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
 
-    when(proxyClient.client().createComponent(any(CreateComponentRequest.class)))
-        .thenThrow(new CfnInvalidRequestException("Invalid parameters"));
-
-    final ResourceModel model = ResourceModel
-        .builder()
-        .environmentName(ENV_NAME)
-        .appId(APP_ID)
-        .name(NAME)
-        .componentType(TYPE)
-        .tags(TAGS)
-        .build();
-
-    CallbackContext context = new CallbackContext();
-
-    final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest
-        .<ResourceModel>builder()
-        .desiredResourceState(model)
-        .build();
-
-    Assertions.assertThrows(CfnInvalidRequestException.class, () -> handler.handleRequest(
-        proxy,
-        request,
-        context,
-        proxyClient,
-        logger
-    ));
-  }
+        Assertions.assertThrows(CfnInvalidRequestException.class, () -> handler.handleRequest(
+                proxy,
+                request,
+                context,
+                proxyClient,
+                logger));
+    }
 }
