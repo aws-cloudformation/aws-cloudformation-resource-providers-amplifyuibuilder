@@ -27,3 +27,5 @@ pyenv*
 *.zip
 build
 .gradle
+docs
+resource-role.yaml
