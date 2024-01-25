@@ -504,10 +504,12 @@
       }
     }
   },
-  "readOnlyProperties": [
+  "createOnlyProperties": [
     "/properties/AppId",
+    "/properties/EnvironmentName"
+  ],
+  "readOnlyProperties": [
     "/properties/CreatedAt",
-    "/properties/EnvironmentName",
     "/properties/Id",
     "/properties/ModifiedAt"
   ],

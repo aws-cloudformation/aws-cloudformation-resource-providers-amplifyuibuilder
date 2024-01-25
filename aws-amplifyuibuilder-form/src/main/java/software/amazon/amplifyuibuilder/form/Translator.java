@@ -40,7 +40,7 @@ public class Translator {
 
   static ResourceModel translateFromReadResponse(final GetFormResponse response) {
     Form form = response.form();
-    ResourceModel mappedModel = ResourceModel.builder()
+    return ResourceModel.builder()
         .appId(form.appId())
         .id(form.id())
         .environmentName(form.environmentName())
@@ -55,20 +55,15 @@ public class Translator {
         .labelDecorator(form.labelDecoratorAsString())
         .tags(form.tags())
         .build();
-
-    return mappedModel;
   }
 
   static CreateFormRequest translateToCreateRequest(final ResourceModel model,
-      final Map<String, String> desiredResourceTags) {
-    Map<String, String> tagsToCreate = new HashMap<>();
+      final Map<String, String> desiredResourceTags, final String requestToken) {
 
-    if (model.getTags() != null && !model.getTags().isEmpty()) {
-      tagsToCreate.putAll(model.getTags());
-    }
     return CreateFormRequest.builder()
         .appId(model.getAppId())
         .environmentName(model.getEnvironmentName())
+        .clientToken(requestToken)
         .formToCreate(CreateFormData.builder()
             .name(model.getName())
             .dataType(transformObj(model.getDataType(), Translator::mapDataTypeCFNToSDK))
@@ -79,6 +74,7 @@ public class Translator {
             .cta(transformObj(model.getCta(), Translator::mapCtaCFNToSDK))
             .schemaVersion(model.getSchemaVersion())
             .labelDecorator(model.getLabelDecorator())
+            .tags(desiredResourceTags)
             .build())
         .build();
   }

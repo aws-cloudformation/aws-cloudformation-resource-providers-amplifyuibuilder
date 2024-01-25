@@ -46,7 +46,6 @@ public class Translator {
       final ResourceModel model,
       final Map<String, String> desiredResourceTags,
       final String requestToken) {
-    Map<String, String> tagsToCreate = getTagsToCreate(model, desiredResourceTags);
 
     CreateComponentRequest.Builder createComponentRequest = CreateComponentRequest
         .builder()
@@ -68,20 +67,10 @@ public class Translator {
     createComponent.events(transformMap(model.getEvents(), Translator::translateEventFromCFNToSDK));
     createComponent.schemaVersion(model.getSchemaVersion());
     createComponent.sourceId(model.getSourceId());
-    createComponent.tags(tagsToCreate.isEmpty() ? null : tagsToCreate);
+    createComponent.tags(desiredResourceTags);
 
     createComponentRequest.componentToCreate(createComponent.build());
     return createComponentRequest.build();
-  }
-
-  private static Map<String, String> getTagsToCreate(final ResourceModel model,
-      final Map<String, String> desiredResourceTags) {
-    Map<String, String> tagsToCreate = new HashMap<>();
-
-    if (model.getTags() != null && !model.getTags().isEmpty()) {
-      tagsToCreate.putAll(model.getTags());
-    }
-    return tagsToCreate;
   }
 
   /**
@@ -437,6 +426,10 @@ public class Translator {
         .properties(transformMap(child.properties(), Translator::translateComponentPropertyFromSDKToCFN))
         .children(transformList(child.children(), Translator::translateChildFromSDKToCFN))
         .events(transformMap(child.events(), Translator::translateEventFromSDKToCFN));
+
+    if (child.sourceId() == null) {
+      builder.sourceId("");
+    }
 
     return builder.build();
   }
