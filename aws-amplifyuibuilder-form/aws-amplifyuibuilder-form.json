@@ -535,6 +535,7 @@
       "permissions": [
         "amplify:GetApp",
         "amplifyuibuilder:CreateForm",
+        "amplifyuibuilder:GetForm",
         "amplifyuibuilder:TagResource",
         "amplifyuibuilder:UntagResource"
       ]
@@ -549,6 +550,7 @@
     "update": {
       "permissions": [
         "amplify:GetApp",
+        "amplifyuibuilder:GetForm",
         "amplifyuibuilder:TagResource",
         "amplifyuibuilder:UntagResource",
         "amplifyuibuilder:UpdateForm"

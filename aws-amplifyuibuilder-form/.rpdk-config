@@ -2,7 +2,7 @@
     "artifact_type": "RESOURCE",
     "typeName": "AWS::AmplifyUIBuilder::Form",
     "language": "java",
-    "runtime": "java8",
+    "runtime": "java11",
     "entrypoint": "software.amazon.amplifyuibuilder.form.HandlerWrapper::handleRequest",
     "testEntrypoint": "software.amazon.amplifyuibuilder.form.HandlerWrapper::testEntrypoint",
     "settings": {
@@ -21,7 +21,7 @@
             "amplifyuibuilder",
             "form"
         ],
-        "codegen_template_path": "default",
+        "codegen_template_path": "guided_aws",
         "protocolVersion": "2.0.0"
     },
     "logProcessorEnabled": "true",

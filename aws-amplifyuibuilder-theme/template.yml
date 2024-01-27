@@ -4,7 +4,7 @@ Description: AWS SAM template for the AWS::AmplifyUIBuilder::Theme resource type
 
 Globals:
   Function:
-    Timeout: 180  # docker start-up times can be long for SAM CLI
+    Timeout: 180 # docker start-up times can be long for SAM CLI
     MemorySize: 256
 
 Resources:
@@ -12,12 +12,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.amplifyuibuilder.theme.HandlerWrapper::handleRequest
-      Runtime: java8
+      Runtime: java11
       CodeUri: ./target/aws-amplifyuibuilder-theme-handler-1.0-SNAPSHOT.jar
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.amplifyuibuilder.theme.HandlerWrapper::testEntrypoint
-      Runtime: java8
+      Runtime: java11
       CodeUri: ./target/aws-amplifyuibuilder-theme-handler-1.0-SNAPSHOT.jar

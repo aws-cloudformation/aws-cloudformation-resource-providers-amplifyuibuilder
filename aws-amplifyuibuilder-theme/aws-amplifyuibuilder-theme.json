@@ -99,6 +99,7 @@
       "permissions": [
         "amplify:GetApp",
         "amplifyuibuilder:CreateTheme",
+        "amplifyuibuilder:GetTheme",
         "amplifyuibuilder:TagResource"
       ]
     },
@@ -111,6 +112,7 @@
     "update": {
       "permissions": [
         "amplify:GetApp",
+        "amplifyuibuilder:GetTheme",
         "amplifyuibuilder:TagResource",
         "amplifyuibuilder:UntagResource",
         "amplifyuibuilder:UpdateTheme"
