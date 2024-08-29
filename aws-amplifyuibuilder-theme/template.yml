@@ -12,12 +12,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.amplifyuibuilder.theme.HandlerWrapper::handleRequest
-      Runtime: java11
+      Runtime: java17
       CodeUri: ./target/aws-amplifyuibuilder-theme-handler-1.0-SNAPSHOT.jar
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.amplifyuibuilder.theme.HandlerWrapper::testEntrypoint
-      Runtime: java11
+      Runtime: java17
       CodeUri: ./target/aws-amplifyuibuilder-theme-handler-1.0-SNAPSHOT.jar

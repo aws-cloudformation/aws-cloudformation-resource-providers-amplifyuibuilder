@@ -4,6 +4,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import software.amazon.amplifyuibuilder.common.TaggingHelpers;
+import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
 import software.amazon.awssdk.services.amplifyuibuilder.model.*;
 import software.amazon.cloudformation.proxy.*;
@@ -187,6 +191,45 @@ public class CreateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModel().getValues()).isNull();
         assertThat(response.getResourceModel().getTags()).isNull();
         assertThat(response.getResourceModel().getName()).isNull();
+    }
+
+    @Test
+    public void handleRequest_taggingError_failure() {
+        ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
+                .environmentName(ENV_NAME)
+                .overrides(null)
+                .values(null)
+                .tags(null)
+                .name(null)
+                .build();
+
+        AwsServiceException e = AwsServiceException.builder()
+            .awsErrorDetails(AwsErrorDetails.builder().errorCode("AccessDeniedException").build())
+            .message(TaggingHelpers.SAMPLE_TAGGING_ACCESS_DENIED_MESSAGE)
+            .build();
+
+        CreateThemeResponse createResponse = CreateThemeResponse.builder()
+            .build();
+
+        when(proxyClient.client().createTheme(any (CreateThemeRequest.class)))
+            .thenThrow(e)
+            .thenReturn(createResponse);
+
+        ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(model)
+            .build();
+
+        ProgressEvent<ResourceModel, CallbackContext> response =
+            new CreateHandler().handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
+        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNotNull();
+        assertThat(response.getErrorCode()).isNotNull();
+        assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.UnauthorizedTaggingOperation);
     }
 
 }

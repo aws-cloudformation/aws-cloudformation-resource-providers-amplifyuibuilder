@@ -49,13 +49,13 @@ public final class ClientWrapper {
       if (e.statusCode() == HttpStatus.SC_NOT_FOUND) {
         throw new CfnNotFoundException(resourceTypeName, e.getMessage());
       }
-      if (e.statusCode() == HttpStatus.SC_FORBIDDEN) {
-        throw new CfnAccessDeniedException(resourceTypeName, e);
-      }
-      throw new CfnGeneralServiceException(resourceTypeName, e);
+      throw e;
     } catch (AwsServiceException e) {
       logger.log("ERROR: " + e.getMessage());
-      throw new CfnGeneralServiceException(e.getMessage(), e);
+      throw e;
+    } catch (Exception e) {
+      logger.log("GENERAL ERROR: " + e.getMessage());
+      throw e;
     }
   }
 

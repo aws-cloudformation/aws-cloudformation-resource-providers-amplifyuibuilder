@@ -36,6 +36,9 @@ public class CreateHandler extends BaseHandlerStd {
               model.setId(response.entity().id());
               return response;
             })
+            .handleError((awsRequest, exception, client, model1, context) -> {
+              return handleErrorInternal(request, exception, proxyClient, model1, callbackContext);
+            })
             .progress())
         .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
   }

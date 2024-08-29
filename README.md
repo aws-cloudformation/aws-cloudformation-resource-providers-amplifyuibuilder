@@ -2,10 +2,11 @@
 
 TODO: Fill this README out!
 
-Be sure to:
+1. Create a new S3 bucket in your account to store your test artifacts. The step functions that will be executing tests
 
-* Change the title in this README
-* Edit your repository description on GitHub
+```shell
+aws s3api create-bucket --bucket {bucketName} --region {bucketRegion} --create-bucket-configuration LocationConstraint={bucketRegion}
+```
 
 ## Security
 

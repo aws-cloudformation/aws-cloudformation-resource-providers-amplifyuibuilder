@@ -2,7 +2,7 @@
     "artifact_type": "RESOURCE",
     "typeName": "AWS::AmplifyUIBuilder::Component",
     "language": "java",
-    "runtime": "java11",
+    "runtime": "java17",
     "entrypoint": "software.amazon.amplifyuibuilder.component.HandlerWrapper::handleRequest",
     "testEntrypoint": "software.amazon.amplifyuibuilder.component.HandlerWrapper::testEntrypoint",
     "settings": {

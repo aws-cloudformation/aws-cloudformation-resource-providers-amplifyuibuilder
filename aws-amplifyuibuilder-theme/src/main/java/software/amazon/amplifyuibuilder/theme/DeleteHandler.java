@@ -30,6 +30,9 @@ public class DeleteHandler extends BaseHandlerStd {
                     model.getId(),
                     logger
                 ))
+                .handleError((awsRequest, exception, client, model1, context) -> {
+                  return handleErrorInternal(request, exception, proxyClient, model1, callbackContext);
+                })
                 .progress()
         )
         .then(progress -> ProgressEvent.defaultSuccessHandler(null));
