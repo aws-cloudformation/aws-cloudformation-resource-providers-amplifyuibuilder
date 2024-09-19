@@ -2,15 +2,10 @@ package software.amazon.amplifyuibuilder.common;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.amplifyuibuilder.AmplifyUiBuilderClient;
-import software.amazon.awssdk.services.amplifyuibuilder.model.AmplifyUiBuilderException;
 import software.amazon.awssdk.services.amplifyuibuilder.model.TagResourceRequest;
 import software.amazon.awssdk.services.amplifyuibuilder.model.UntagResourceRequest;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
